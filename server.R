@@ -1,33 +1,70 @@
 function(input, output) {
   
   # GENERAR TABLAS PARA VISUALIZAR DATOS
-  output$tabla = DT::renderDataTable({
-    datos
-  })
+  output$tabla <- DT::renderDataTable(DT::datatable(
+    extensions = 'Buttons',
+    options = list(
+      dom = 'Bfrtip',
+      buttons = c('csv')
+    ),
+    {
+    data <- concentrados_comp
+    if (input$Cultivo != "Todos") {
+      data <- data[data$Cultivo == input$Cultivo,]
+    }
+    if (input$Municipio != "Todos") {
+      data <- data[data$Municipio == input$Municipio,]
+    }
+    if (input$Concat != "Todos") {
+      data <- data[data$Concat == input$Concat,]
+    }
+    data
+  }))
   
   output$tabla_a = DT::renderDataTable({
-    datos_a
+      DT::datatable(
+        data <- cambio_usv,
+        extensions = 'Buttons',
+        options = list(
+          dom = 'Bfrtip',
+          buttons = c('csv')
+        ),
+      )
   })
   
+  output$tabla_b = DT::renderDataTable({
+    concentrados_comp
+  })
+  
+  output$tabla_c = DT::renderDataTable({
+    concentrado_comparativo_b
+  })
   
   # GENERAR GRÁFICAS
   output$grafica1 <- renderPlot({
-    plot(datos_a$sup_tot_ch, datos_a$sup_cal_ha)
+    plot(ac_sf16$sup_total, ac_sf16$terrenos)
   })
   
   # GENERAR MAPA
-  
   output$mapa <- renderLeaflet({
     
-    m <-leaflet(combine_b) %>%
+
+  })     
+  
+    m <-leaflet(ac_mapa) %>%
       addTiles(group = "OSM (default)") %>%
       addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
       addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite")
     
-    # AGREGAR CAPA DE DATOS DE MAIZ
-    m <- m %>%  addPolygons(data = maiz_mapa, stroke = TRUE, smoothFactor = 0.3, 
+    m <- m %>%  addPolygons(data = ac_mapa, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                            fillColor = ~pal_1(as.numeric(as.character(Terrenos_totales))),
+                            group = "Áreas de control",
+                            label = ~paste0(cve_concat, ": ", formatC(Terrenos_totales, big.mark = ",")))
+    
+    # AGREGAR CAPA DE DATOS DE PRODUCCIÓN
+    m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
-                            fillColor = ~pal(TERRENOS),
+                            fillColor = ~pal_2(as.numeric(Porcentaje_terrenos_forestal)),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -38,17 +75,16 @@ function(input, output) {
                               fillOpacity = 0.5,
                               dashArray = "2",
                               bringToFront = TRUE),
-                            group = "Maiz",
+                            group = "Actividad forestal",
                             labelOptions = labelOptions(
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"),
-                            label = ~paste0(NOM_MUN, ": ", formatC(TERRENOS, big.mark = ",")))
-    
-    # AGREGAR CAPA DE DATOS DE MANGO
-    m <- m %>%  addPolygons(data = mango_mapa, stroke = TRUE, smoothFactor = 0.3, 
+                            label = ~paste0(cve_concat, ": ", formatC(as.numeric(Porcentaje_terrenos_forestal), big.mark = ",")))
+
+    m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
-                            fillColor = ~pal(TERRENOS),
+                            fillColor = ~pal_2(as.numeric(Porcentaje_terrenos_agricola)),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -59,17 +95,16 @@ function(input, output) {
                               fillOpacity = 0.5,
                               dashArray = "2",
                               bringToFront = TRUE),
-                            group = "Mango",
+                            group = "Actividad agricola",
                             labelOptions = labelOptions(
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"),
-                            label = ~paste0(NOM_MUN, ": ", formatC(TERRENOS, big.mark = ",")))
+                            label = ~paste0(cve_concat, ": ", formatC(as.numeric(Porcentaje_terrenos_agricola), big.mark = ",")))
     
-    # AGREGAR CAPA DE DATOS DE MANGO
-    m <- m %>%  addPolygons(data = manzana_mapa, stroke = TRUE, smoothFactor = 0.3, 
+    m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
-                            fillColor = ~pal(TERRENOS),
+                            fillColor = ~pal_2(as.numeric(Porcentaje_terrenos_pecuario)),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -80,22 +115,21 @@ function(input, output) {
                               fillOpacity = 0.5,
                               dashArray = "2",
                               bringToFront = TRUE),
-                            group = "Manzana",
+                            group = "Actividad pecuaria",
                             labelOptions = labelOptions(
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"),
-                            label = ~paste0(NOM_MUN, ": ", formatC(TERRENOS, big.mark = ",")))
+                            label = ~paste0(cve_concat, ": ", formatC(as.numeric(Porcentaje_terrenos_pecuario), big.mark = ",")))
     
-    m <- m %>%addLegend("bottomleft", pal = pal, values = ~TERRENOS, opacity = 1.0) %>%
-      addLegend("bottomleft", pal = pal, values = ~SUP_TOTAL, opacity = 1.0)
+    m <- m %>%addLegend("bottomleft", pal = pal_1, values = ~Terrenos_totales, opacity = 1.0) %>%
+      addLegend("bottomleft", pal = pal, values = ~Superficie_total, opacity = 1.0)
     
     # Layers control
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
-      overlayGroups = c("Maiz", "Mango", "Manzana"),
+      overlayGroups = c("Actividad forestal", "Actividad agricola", "Actividad pecuaria", "Áreas de control"),
       options = layersControlOptions(collapsed = TRUE)
     )
     m
-  }) 
 }
