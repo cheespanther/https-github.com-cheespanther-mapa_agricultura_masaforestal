@@ -7,8 +7,8 @@ navbarPage("MAPA INTERACTIVO",
            ),
            tabPanel("Ver mapa",
                     bootstrapPage(
-                      leafletOutput("mapa")
-                    ),
+                      tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
+                      leafletOutput("mapa", width = "100%", height = "100%")),
            ),
            navbarMenu("Datos",
                       tabPanel("Datos Chiapas",   
@@ -18,19 +18,19 @@ navbarPage("MAPA INTERACTIVO",
                                         selectInput("Cultivo",
                                                     "Producto:",
                                                     c("Todos",
-                                                      unique(as.character(concentrados_comp$Cultivo))))
+                                                      unique(as.character(concentrado_comparativo_ac$CULTI_ESPE))))
                                  ),
                                  column(4,
                                         selectInput("Municipio",
                                                     "Municipio:",
                                                     c("Todos",
-                                                      unique(as.character(concentrados_comp$Municipio))))
+                                                      unique(as.character(concentrado_comparativo_ac$NOM_MUN))))
                                  ),
                                  column(4,
                                         selectInput("Concat",
                                                     "Clave concatenado/Área de Control:",
                                                     c("Todos",
-                                                      unique(as.character(concentrados_comp$Concat))))
+                                                      unique(as.character(concentrado_comparativo_ac$CVE_CONCAT))))
                                  )
                                ),
                                DT::dataTableOutput("tabla"),

@@ -13,81 +13,162 @@ library(DBI)
 library(odbc)
 library(dplyr)
 library(sf)
+library(Hmisc)
+library(corrplot)
+library(car)
+library(ggplot2)
 
-
-# ESTILOS DEL MAPA
-bins_terrenos_tot <- c(0, 10, 20, 50, 100, 200, 500, Inf)
-bins_pct <- c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, Inf)
-# PALETA DE COLORES
-pal_1 <- colorBin("viridis", domain = as.numeric(as.character(dfa$Terrenos_totales)), bins = bins_terrenos_tot)
-pal_2 <- colorBin("heat", domain = as.numeric(as.character(dfa$pct_forestal)), bins = bins_pct)
-
-
-# LEER LOS DATOS DEL CAMBIO DE USO DE SUELO SEGÚN SERIE III Y SERIE VI
+# LEER LOS DATOS DEL CAMBIO DE USO DE SUELO SEG??N SERIE III Y SERIE VI
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/datos/")
 ac_mapa <- readOGR("ac_mapa.geojson")
-ac_mapa$cve_concat <- as.factor(paste(ac_mapa$CVE_MUN, ac_mapa$CVE_AGEB, ac_mapa$CVE_MZA, sep="_"))
+ac_mapa$CVE_CONCAT <- as.factor(paste(ac_mapa$CVE_MUN, ac_mapa$CVE_AGEB, ac_mapa$CVE_MZA, sep="_"))
 ac_mapa <- spTransform(ac_mapa, CRS("+proj=longlat +datum=WGS84 +no_defs"))
 ac_datos <- as.data.frame(ac_mapa)
 
 cambio_usv <- read.csv(file = "control_selva.csv")
+colnames(cambio_usv) <- toupper(colnames(cambio_usv))
 forestal <- read.csv(file = "16_forestal.csv")
+colnames(forestal) <- toupper(colnames(forestal))
 col_f <- ncol(forestal)
 pecuario <- read.csv(file = "16_pecuario.csv")
+colnames(pecuario) <- toupper(colnames(pecuario))
 col_p <- ncol(pecuario)
 
 concentrado16 <- read.csv(file = "16_agricola_total.csv")
+colnames(concentrado16) <- toupper(colnames(concentrado16))
 datos_forestal <- read.csv(file = "cambios_1.csv")
+colnames(datos_forestal) <- toupper(colnames(datos_forestal))
 datos_forestal_2 <- read.csv(file = "cambios_2.csv")
+colnames(datos_forestal_2) <- toupper(colnames(datos_forestal_2))
+# UNIFICAR Y AGRUPAR ID'S DE CULTIVOS 
+concentrado16$CULTI_ESPE <- recode(concentrado16$CULTI_ESPE, "CAFE CIMARRON" = "CAFE")
 
-concentrado16$terreno_prom_tot <- as.numeric(as.character(concentrado16$sup_total))/as.numeric(as.character(concentrado16$terrenos))
-concentrado16$terreno_prom_prod <- as.numeric(as.character(concentrado16$sup_semb))/as.numeric(as.character(concentrado16$num_terr))
-ac_sum16 <- ddply(concentrado16, .(cve_concat), numcolwise(sum))
+concentrado16$TERRENO_PROM_TOT <- as.numeric(as.character(concentrado16$SUP_TOTAL))/as.numeric(as.character(concentrado16$TERRENOS))
+concentrado16$TERRENO_PROM_SEM <- as.numeric(as.character(concentrado16$SUP_SEMB))/as.numeric(as.character(concentrado16$NUM_TERR))
+ac_sum16 <- ddply(concentrado16, .(CVE_CONCAT), numcolwise(sum))
 
-dfa <- merge(ac_datos, forestal[,c(10,col_f)], by.x = "cve_concat", by.y = "cve_concat", all.y=TRUE, all.x = TRUE)
-dfa <- merge(dfa, pecuario[,c(10,col_p)], by.x = "cve_concat", by.y = "cve_concat", all.y=TRUE, all.x = TRUE)
-dfa <- merge(dfa, ac_sum16[,c(1,10,11,12,15,16)], by.x = "cve_concat", by.y = "cve_concat", all.y=TRUE, all.x = TRUE)
+dfa <- merge(ac_datos, forestal[,c(10,col_f)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
+dfa <- merge(dfa, pecuario[,c(10,col_p)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
+dfa <- merge(dfa, ac_sum16[,c(1,10,11,12,15,16)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
 dfa[is.na(dfa)] <- 0
 
-dfa$pct_forestal <- dfa$f_total/as.numeric(as.character(dfa$TERRENOS))
-dfa$pct_pecuario <- dfa$p_total/as.numeric(as.character(dfa$TERRENOS))
-dfa$pct_agricola <- dfa$num_terr/as.numeric(as.character(dfa$TERRENOS))
-dfa$pct_ocupado <- (dfa$pct_forestal + dfa$pct_pecuario + dfa$pct_agricola)
+dfa$PCT_FORESTAL <- dfa$F_TOTAL/as.numeric(as.character(dfa$TERRENOS))
+dfa$PCT_PECUARIO <- dfa$P_TOTAL/as.numeric(as.character(dfa$TERRENOS))
+dfa$PCT_AGRICOLA <- dfa$NUM_TERR/as.numeric(as.character(dfa$TERRENOS))
+dfa$PCT_OCUPADO <- (dfa$PCT_FORESTAL + dfa$PCT_PECUARIO + dfa$PCT_AGRICOLA)
 
-colnames(dfa) <- c("cve_concat", "AC", "cve_Entidad", "Entidad", "cvd_Municipio", "Municipio", "cve_AGEB", "cve_Manzana", "Terrenos_totales", "Superficie_total", "Terrenos_con_actividad_forestal", "Terrenos_con_actividad_pecuaria", "Terrenos_con_actividad_agricola", "Superfice_carto_agricola", "Superficie_sembrada", "Terreno_promedio_ha_total", "Terreno_promedio_aricola", "Porcentaje_terrenos_forestal", "Porcentaje_terrenos_pecuario", "Porcentaje_terrenos_agricola", "Porcentaje_ocupado")
-dfa_mc <- subset(dfa, dfa$Municipio=="Marqués de Comillas")
+# colnames(dfa) <- c("cve_concat", "AC", "cve_Entidad", "Entidad", "cvd_Municipio", "Municipio", "cve_AGEB", "cve_Manzana", "Terrenos_totales", "Superficie_total", "Terrenos_con_actividad_forestal", "Terrenos_con_actividad_pecuaria", "Terrenos_con_actividad_agricola", "Superfice_carto_agricola", "Superficie_sembrada", "Terreno_promedio_ha_total", "Terreno_promedio_aricola", "Porcentaje_terrenos_forestal", "Porcentaje_terrenos_pecuario", "Porcentaje_terrenos_agricola", "Porcentaje_ocupado")
+dfa_mc <- subset(dfa, dfa$Municipio=="Marqu??s de Comillas")
 write.csv(dfa, file = "df16_final.csv")
 write.csv(dfa_mc, file = "df16_final_mc.csv")
 
 concentrado07 <- read.csv(file = "07_agricola_total.csv")
-concentrado07$up_prom_tot <- as.numeric(as.character(concentrado07$sup_sc))/as.numeric(as.character(concentrado07$up))
-concentrado07$up_prom_prod <- as.numeric(as.character(concentrado07$sup_semb))/as.numeric(as.character(concentrado07$up))
-ac_sum07 <- ddply(concentrado07, .(cve_concat), numcolwise(sum))
+colnames(concentrado07) <- toupper(colnames(concentrado07))
+colnames(concentrado07)[colnames(concentrado07) %in% c("MUN", "CULTIVO")] <- c("NOM_MUN", "CULTI_ESPE")
 
-dfb <- merge(ac_datos, ac_sum07[,c(1,7,8,9,10,11,12,15,16,17)], by = "cve_concat")
+# UNIFICAR Y AGRUPAR ID'S DE CULTIVOS 
+concentrado07$CULTI_ESPE <- recode(concentrado07$CULTI_ESPE, "MAIZ GRANO" = "MAIZ")
 
-setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/workspace/")
+concentrado07$UP_PROM_TOTAL <- as.numeric(as.character(concentrado07$SUP_SC))/as.numeric(as.character(concentrado07$UP))
+concentrado07$UP_PROM_SEMB <- as.numeric(as.character(concentrado07$SUP_SEMB))/as.numeric(as.character(concentrado07$UP))
+ac_sum07 <- ddply(concentrado07, .(CVE_CONCAT), numcolwise(sum))
 
-sup_semb07 <- as.data.frame(cbind(as.data.frame(concentrado07$cve_concat), concentrado07$sup_sc, concentrado07$sup_semb, concentrado07$cultivo, concentrado07$mun))
-sup_semb16 <- as.data.frame(cbind(as.data.frame(concentrado16$cve_concat), concentrado16$sup_total , concentrado16$sup_semb, concentrado16$culti_espe, concentrado16$nom_mun))
+concentrado07$CULTI_ESPE <- laply(concentrado07$CULTI_ESPE, toupper)
+concentrado07$CULTI_ESPE <- laply(concentrado07$CULTI_ESPE, toupper)
+concentrado16$CULTI_ESPE <- laply(concentrado16$CULTI_ESPE, toupper)
 
-colnames(sup_semb16) <- c("Concat", "Superficie Cartográfica Total", "Superficie Sembrada", "Cultivo", "Municipio")
-colnames(sup_semb07) <- c("Concat", "Superficie Cartográfica Total", "Superficie Sembrada", "Cultivo", "Municipio")
+dfb <- merge(ac_datos, ac_sum07[,c(1,7,8,9,10,11,12,15,16,17)], by = "CVE_CONCAT")
 
-sup_semb07$Cultivo <- laply(sup_semb07$Cultivo, toupper)
-sup_semb16$Cultivo <- laply(sup_semb16$Cultivo, toupper)
+# REGRESAR AL ENTORNO GLOBAL DEL PROGRAMA
+setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/")
 
-sup_semb07$Concat_B <- paste(sup_semb07$Concat, sup_semb07$Cultivo, sep="_")
-sup_semb16$Concat_B <- paste(sup_semb16$Concat, sup_semb16$Cultivo, sep="_")
+sup_semb07 <- as.data.frame(cbind(as.data.frame(concentrado07$CVE_CONCAT), concentrado07$SUP_SC, concentrado07$SUP_SEMB, concentrado07$CULTI_ESPE, concentrado07$NOM_MUN))
+sup_semb16 <- as.data.frame(cbind(as.data.frame(concentrado16$CVE_CONCAT), concentrado16$SUP_TOTAL , concentrado16$SUP_SEMB, concentrado16$CULTI_ESPE, concentrado16$NOM_MUN))
 
-concentrado_comparativo <- merge(sup_semb07, sup_semb16, by="Concat_B", all.y=TRUE, all.x=TRUE)
+colnames(sup_semb16) <- c("CVE_CONCAT", "SUP_TOTAL_CARTO", "SUP_SEMB", "CULTI_ESPE", "NOM_MUN")
+colnames(sup_semb07) <- c("CVE_CONCAT", "SUP_TOTAL_CARTO", "SUP_SEMB", "CULTI_ESPE", "NOM_MUN")
 
-concentrado_comparativo_b <- merge(ac_datos, concentrado_comparativo, by.x = "cve_concat", by.y = "Concat.x", all.y=TRUE, all.x = TRUE)
-concentrado_comparativo_sum <- ddply(concentrado_comparativo_b, .(cve_concat), numcolwise(sum))
-concentrado_comparativo_sum$cambio_agricola <- as.numeric(as.character(concentrado_comparativo_sum$`Superficie Cartográfica Total.x`)) - as.numeric(as.character(concentrado_comparativo_sum$`Superficie Cartográfica Total.y`))
-concentrado_comparativo_sum$cambio_agricola_relativo <- as.numeric(as.character(concentrado_comparativo_sum$cambio_agricola)) / as.numeric(as.character(concentrado_comparativo_sum$`Superficie Cartográfica Total.x`))
+sup_semb07$CONCAT_ESPE <- paste(sup_semb07$CVE_CONCAT, sup_semb07$CULTI_ESPE, sep="_")
+sup_semb16$CONCAT_ESPE <- paste(sup_semb16$CVE_CONCAT, sup_semb16$CULTI_ESPE, sep="_")
 
-# UNIR DATOS ANALÍTICOS CON DATOS GEOESPACIALES
+# COMPARACI??N DE CASOS COMPLETOS ANALIZAR LAS DIFERENCIAS ENTRE TERRENOS POR ESPECIE SOLO CUANDO EXISTAN DATOS COMPARBLES
 
-ac_mapa@data = data.frame(ac_mapa@data, dfa[match(ac_mapa@data[,"cve_concat"], dfa[,"cve_concat"]),])
+concentrado_comparativo_esp <- merge(sup_semb07, sup_semb16, by="CONCAT_ESPE", all.y=TRUE, all.x=TRUE)
+concentrado_comparativo_b_esp <- concentrado_comparativo_esp[complete.cases(concentrado_comparativo_esp),]
+
+concentrado_comparativo_b_esp <- merge(ac_datos, concentrado_comparativo_b_esp, by.x = "CVE_CONCAT", by.y = "CVE_CONCAT.x", all.y=TRUE, all.x = TRUE)
+concentrado_comparativo_sum_esp <- ddply(concentrado_comparativo_b_esp, .(CONCAT_ESPE), numcolwise(sum))
+concentrado_comparativo_sum_esp$CAMBIO_AGRICOLA <- as.numeric(as.character(concentrado_comparativo_sum_esp$SUP_SEMB.y)) - as.numeric(as.character(concentrado_comparativo_sum_esp$SUP_SEMB.x))
+concentrado_comparativo_sum_esp$CAMBIO_AGRICOLA_RELATIVO <- as.numeric(as.character(concentrado_comparativo_sum_esp$CAMBIO_AGRICOLA)) / as.numeric(as.character(concentrado_comparativo_sum_esp$SUP_SEMB.x))
+
+concentrado_comparativo_ac <- merge(sup_semb07, sup_semb16, by="CVE_CONCAT", all.y=TRUE, all.x=TRUE)
+concentrado_comparativo_b_ac <- concentrado_comparativo_ac[complete.cases(concentrado_comparativo_ac),]
+
+concentrado_comparativo_b_ac <- merge(ac_datos, concentrado_comparativo_b_ac, by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
+concentrado_comparativo_sum_ac <- ddply(concentrado_comparativo_b_ac, .(CVE_CONCAT), numcolwise(sum))
+concentrado_comparativo_sum_ac$CAMBIO_AGRICOLA <- as.numeric(as.character(concentrado_comparativo_sum_ac$SUP_SEMB.y)) - as.numeric(as.character(concentrado_comparativo_sum_ac$SUP_SEMB.x))
+concentrado_comparativo_sum_ac$CAMBIO_AGRICOLA_RELATIVO <- as.numeric(as.character(concentrado_comparativo_sum_ac$CAMBIO_AGRICOLA)) / as.numeric(as.character(concentrado_comparativo_sum_ac$SUP_SEMB.x))
+
+concentrado_comparativo_ac_mc <- subset(concentrado_comparativo_b_ac, concentrado_comparativo_b_ac$NOM_MUN.y == "Marqu??s de Comillas")
+concentrado_comparativo_sum_ac_mc <- ddply(concentrado_comparativo_ac_mc, .(CVE_CONCAT), numcolwise(sum))
+concentrado_comparativo_sum_ac_mc$CAMBIO_AGRICOLA <- as.numeric(as.character(concentrado_comparativo_sum_ac_mc$SUP_SEMB.y)) - as.numeric(as.character(concentrado_comparativo_sum_ac_mc$SUP_SEMB.x))
+concentrado_comparativo_sum_ac_mc$CAMBIO_AGRICOLA_RELATIVO <- as.numeric(as.character(concentrado_comparativo_sum_ac_mc$CAMBIO_AGRICOLA)) / as.numeric(as.character(concentrado_comparativo_sum_ac_mc$SUP_SEMB.x))
+
+df_correlacion_mc <- merge(dfa, datos_forestal_2, by.x = "CONTROL" , by.y = "ETIQUETAS.DE.FILA")
+df_correlacion_mc <- merge(df_correlacion_mc, concentrado_comparativo_sum_ac_mc, by = "CVE_CONCAT")
+df_correlacion_mc_b <- df_correlacion_mc[,c(17:38)]
+colnames(df_correlacion_mc_b) <- c("Tama??o terreno promedio", "Porcentaje Terrenos Forestales", "Porcentaje Terrenos Pecuarios", "Porcentaje Terrenos Agricolas", "Porcentaje Terrenos Ocupados", "H??ctareas Productivas", "H??ctareas Conservadas", "H??ctareas Deforestadas", "H??ctareas Degradadas", "H??ctareas Reforestadas", "H??ctareas Sin Cambio", "H??ctareas de Transici??n", "H??ctareas Urbanizadas", "Total General", "Porcentaje Degradado", "Superficie total est", "Superficie Total Cartogr??fica 07", "Superficie Sembrada 07", "Superficie Total Cartogr??fica 16", "Superficie Sembrada 16","Cambio Agr??cola en H??ctareas", "Cambio Agr??cola Relativo")
+
+df_correlacion_spearman <- cor(df_correlacion_mc_b)
+df_correlacion_pearson <- cor(df_correlacion_mc_b, method = "pearson")
+df_correlacion_kendall <- cor(df_correlacion_mc_b, method = "kendall")
+df_correlacion_todas <- cor(df_correlacion_mc_b, use = "everything",
+    method = c("pearson", "kendall", "spearman"))
+
+corrplot(df_correlacion_todas, method = "square")
+
+x <- df_correlacion_mc_b$`Porcentaje Terrenos Pecuarios`
+y <- df_correlacion_mc_b$`H??ctareas Deforestadas`
+
+# Plot with main and axis titles
+# Change point shape (pch = 19) and remove frame.
+plot(x, y, main = "Correlaci??n X y Y",
+     xlab = "Variable X (agropecuaria)", ylab = "Variable Y (cambio/deforestacion)",
+     pch = 19, frame = FALSE)
+abline(lm(y ~ x, data = df_correlacion_mc_b), col = "blue")
+cor(x,y)
+
+scatterplot(y ~ x)
+
+# Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables 
+library(GGally)
+
+tabla_cor1 <- df_correlacion_mc_b[,c(1,7,8,9,10,11,12,13)]
+tabla_cor2 <- df_correlacion_mc_b[,c(2,7,8,9,10,11,12,13)]
+tabla_cor3 <- df_correlacion_mc_b[,c(3,7,8,9,10,11,12,13)]
+tabla_cor4 <- df_correlacion_mc_b[,c(4,7,8,9,10,11,12,13)]
+tabla_cor5 <- df_correlacion_mc_b[,c(5,7,8,9,10,11,12,13)]
+tabla_cor6 <- df_correlacion_mc_b[,c(19,7,8,9,10,11,12,13)]
+tabla_cor7 <- df_correlacion_mc_b[,c(22,7,8,9,10,11,12,13)]
+
+
+# Create data 
+data <- tabla_cor7
+
+# Check correlations (as scatterplots), distribution and print corrleation coefficient 
+ggpairs(data, title="Correlograma Cambios de uso de suelo vs. Cambio relativo agricola 07 a 16")
+
+
+# UNIR DATOS ANAL??TICOS CON DATOS GEOESPACIALES
+
+ac_mapa@data = data.frame(ac_mapa@data, dfa[match(ac_mapa@data[,"CVE_CONCAT"], dfa[,"CVE_CONCAT"]),])
+
+# ESTILOS DEL MAPA
+bins_terrenos_tot <- c(0, 10, 20, 50, 100, 200, 500, Inf)
+bins_pct <- seq(0.1:1, by = 0.02)
+
+# PALETA DE COLORES
+pal_1 <- colorBin("viridis", domain = as.numeric(as.character(dfa$Terrenos_totales)), bins = bins_terrenos_tot)
+pal_2 <- colorBin( palette="magma", domain=ac_mapa@data$NUM_TERR, na.color="transparent", bins=bins_pct)
+pal_3 <- colorBin( palette="YlOrBr", domain=ac_mapa@data$NUM_TERR, na.color="transparent", bins=bins_pct)
 

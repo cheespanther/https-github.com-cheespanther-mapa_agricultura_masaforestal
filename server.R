@@ -8,15 +8,15 @@ function(input, output) {
       buttons = c('csv')
     ),
     {
-    data <- concentrados_comp
-    if (input$Cultivo != "Todos") {
-      data <- data[data$Cultivo == input$Cultivo,]
+    data <- concentrado_comparativo_ac
+    if (input$CULTI_ESPE != "Todos") {
+      data <- data[data$CULTI_ESPE == input$CULTI_ESPE,]
     }
     if (input$Municipio != "Todos") {
-      data <- data[data$Municipio == input$Municipio,]
+      data <- data[data$NOM_MUN == input$NOM_MUN,]
     }
-    if (input$Concat != "Todos") {
-      data <- data[data$Concat == input$Concat,]
+    if (input$CVE_CONCAT != "Todos") {
+      data <- data[data$Concat == input$CVE_CONCAT,]
     }
     data
   }))
@@ -33,11 +33,11 @@ function(input, output) {
   })
   
   output$tabla_b = DT::renderDataTable({
-    concentrados_comp
+    concentrado_comparativo_b
   })
   
   output$tabla_c = DT::renderDataTable({
-    concentrado_comparativo_b
+    concentrado_comparativo_b_ac
   })
   
   # GENERAR GRÁFICAS
@@ -57,14 +57,14 @@ function(input, output) {
       addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite")
     
     m <- m %>%  addPolygons(data = ac_mapa, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            fillColor = ~pal_1(as.numeric(as.character(Terrenos_totales))),
+                            fillColor = ~pal_1(as.numeric(as.character(TERRENOS))),
                             group = "Áreas de control",
-                            label = ~paste0(cve_concat, ": ", formatC(Terrenos_totales, big.mark = ",")))
+                            label = ~paste0(CVE_CONCAT, ": ", formatC(TERRENOS, big.mark = ",")))
     
     # AGREGAR CAPA DE DATOS DE PRODUCCIÓN
     m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
-                            fillColor = ~pal_2(as.numeric(Porcentaje_terrenos_forestal)),
+                            fillColor = ~pal_2(as.numeric(PCT_FORESTAL)),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -80,11 +80,11 @@ function(input, output) {
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"),
-                            label = ~paste0(cve_concat, ": ", formatC(as.numeric(Porcentaje_terrenos_forestal), big.mark = ",")))
+                            label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(PCT_FORESTAL), big.mark = ",")))
 
     m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
-                            fillColor = ~pal_2(as.numeric(Porcentaje_terrenos_agricola)),
+                            fillColor = ~pal_3(as.numeric(PCT_AGRICOLA)),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -100,11 +100,11 @@ function(input, output) {
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"),
-                            label = ~paste0(cve_concat, ": ", formatC(as.numeric(Porcentaje_terrenos_agricola), big.mark = ",")))
+                            label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(PCT_AGRICOLA), big.mark = ",")))
     
     m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
-                            fillColor = ~pal_2(as.numeric(Porcentaje_terrenos_pecuario)),
+                            fillColor = ~pal_3(as.numeric(PCT_PECUARIO)),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -120,10 +120,10 @@ function(input, output) {
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"),
-                            label = ~paste0(cve_concat, ": ", formatC(as.numeric(Porcentaje_terrenos_pecuario), big.mark = ",")))
+                            label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(PCT_PECUARIO), big.mark = ",")))
     
-    m <- m %>%addLegend("bottomleft", pal = pal_1, values = ~Terrenos_totales, opacity = 1.0) %>%
-      addLegend("bottomleft", pal = pal, values = ~Superficie_total, opacity = 1.0)
+    m <- m %>%addLegend("bottomleft", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
+      addLegend("bottomleft", pal = pal_2, values = ~SUP_TOTAL, opacity = 1.0)
     
     # Layers control
     m <- m %>% addLayersControl(
