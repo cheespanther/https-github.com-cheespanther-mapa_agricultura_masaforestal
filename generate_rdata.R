@@ -146,8 +146,12 @@ df_correlacion_pearson <- cor(df_correlacion_mc_c, method = "pearson")
 ac_mapa@data = data.frame(ac_mapa@data, dfa[match(ac_mapa@data[,"CVE_CONCAT"], dfa[,"CVE_CONCAT"]),])
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
 
+setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/data/raw_data")
+
 save(ac_mapa, file = "carto.RData")
 save(dfa, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado, comparado_b, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")
 save(df_correlacion_mc, df_correlacion_mc_b, df_correlacion_mc_c, df_correlacion_pearson, file = "correlaciones.RData")
+
+setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal")
