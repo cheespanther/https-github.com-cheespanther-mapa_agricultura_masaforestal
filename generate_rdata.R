@@ -17,35 +17,35 @@ library(geojsonio)
 
 # LECTURA DE SHAPE BASE DE ÁREAS DE CONTROL DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
-ac_mapa <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/ac_mapa_gen.geojson",  what = "sp")
+ac_mapa <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/ac_mapa_gen.geojson",  what = "sp")
 colnames(ac_mapa@data) <- toupper(colnames(ac_mapa@data)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CVE_AGEB, ac_mapa@data$CVE_MZA, sep="_"))
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN PECUARIAS DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
-pecuario <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/16_pecuario.csv")
+pecuario <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/16_pecuario.csv")
 colnames(pecuario) <- toupper(colnames(pecuario)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 col_p <- ncol(pecuario)
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN FORESTAL DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
-forestal <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/16_forestal.csv")
+forestal <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/16_forestal.csv")
 colnames(forestal) <- toupper(colnames(forestal)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 col_f <- ncol(forestal)
 
 # LECTURA DE DATOS DE PRODUCCIÓN AGRÍCOLA DEL 2016 DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
-concentrado16 <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/16_agricola_total.csv")
+concentrado16 <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/16_agricola_total.csv")
 colnames(concentrado16) <- toupper(colnames(concentrado16)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 
 # CAMBIO DE USO DE SUELO EN EL MUNICIPIO DE MARQUÉS DE COMILLAS DE GITHUB
 # FUENTE: ELABORACIÓN PROPIA CON DATOS DEL INEGI
-datos_forestal_2 <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/cambios_2.csv")
+datos_forestal_2 <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/cambios_2.csv")
 colnames(datos_forestal_2) <- toupper(colnames(datos_forestal_2)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 
 # LECTURA DE DATOS DE LOS CAMBIOS DE USO DE SUELO Y VEGETACIÓN SERIE III Y SERIE VI
 # FUENTE: INEGI
-cambio_usv <- import('https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/control_selva.csv')
+cambio_usv <- import('https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/control_selva.csv')
 
 # UNIFICAR Y AGRUPAR ID'S DE CULTIVOS 
 # concentrado16$CULTI_ESPE <- recode(concentrado16$CULTI_ESPE, 'CAFE CIMARRON' = 'CAFE')
@@ -146,15 +146,12 @@ df_correlacion_mc_c <- df_correlacion_mc[,c(20:36)]
 
 df_correlacion_pearson <- cor(df_correlacion_mc_c, method = "pearson")
 
-corrplot(df_correlacion_pearson, method = "square")
-
 # UNIR DATOS ANALÍTICOS CON DATOS GEOESPACIALES
 
 ac_mapa@data = data.frame(ac_mapa@data, dfa[match(ac_mapa@data[,"CVE_CONCAT"], dfa[,"CVE_CONCAT"]),])
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
-# ESTILOS DEL MAPA
-)
 
+save(ac_mapa, file = "carto.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
-save()
 save(comparado, comparado_b, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")
+save(df_correlacion_mc, df_correlacion_mc_b, df_correlacion_mc_c, df_correlacion_pearson, file = "correlaciones.RData")
