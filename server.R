@@ -11,14 +11,14 @@ function(input, output) {
     ),
     {
       data <- concentrado07
-      if (input$Cultivo != "Todos") {
-        data <- data[data$CULTI_ESPE == input$Cultivo,]
+      if (input$CULTI_ESPE != "Todos") {
+        data <- data[data$CULTI_ESPE == input$CULTI_ESPE,]
       }
-      if (input$Municipio != "Todos") {
-        data <- data[data$NOM_MUN_07 == input$Municipio,]
+      if (input$NOM_MUN_07 != "Todos") {
+        data <- data[data$NOM_MUN_07 == input$NOM_MUN_07,]
       }
-      if (input$CVE_CONCAT != "Todos") {
-        data <- data[data$CVE_CONCAT_07 == input$Concat,]
+      if (input$CVE_CONCAT_07 != "Todos") {
+        data <- data[data$CVE_CONCAT_07 == input$CVE_CONCAT_07,]
       }
       data
     }))
@@ -26,18 +26,31 @@ function(input, output) {
   # VISUALIZACIÓN DE DATOS 2
   output$tabla2 = DT::renderDataTable({
     DT::datatable(
-      data <- cambio_usv,
       extensions = 'Buttons',
       options = list(
         dom = 'Bfrtip',
         buttons = c('csv')
-      )
+      ),
+      {
+        data <- concentrado16
+        if (input$CULTI_ESPE != "Todos") {
+          data <- data[data$CULTI_ESPE == input$CULTI_ESPE,]
+        }
+        if (input$NOM_MUN_07 != "Todos") {
+          data <- data[data$NOM_MUN_16 == input$NOM_MUN_16,]
+        }
+        if (input$CVE_CONCAT_07 != "Todos") {
+          data <- data[data$CVE_CONCAT_16 == input$CVE_CONCAT_16,]
+        }
+        data
+      }
     )
   })
   
   # GENERAR GRÁFICAS
   output$grafica1 <- renderPlot({
     corrplot(df_correlacion_pearson, method = "square")
+    scatterplot(df_correlacion_mc_c$PCT_AGRICOLA, df_correlacion_mc$DEFORESTADA)
   })
   
   # GENERAR MAPA
@@ -49,8 +62,8 @@ function(input, output) {
       addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite")
     
     m <- m %>%  addPolygons(data = ac_mapa, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            fillColor = ~pal_1(as.numeric(as.character(TERRENOS))),
-                            group = "Áreas de control",
+                            fillColor = ~pal_1(as.numeric(TERRENOS)),
+                            group = "Terrenos totales",
                             label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(as.character(TERRENOS)), big.mark = ",")))
     
     # AGREGAR CAPA DE DATOS DE PRODUCCIÓN
@@ -72,7 +85,7 @@ function(input, output) {
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"),
-                            label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(as.character(PCT_FORESTAL)), big.mark = ",")))
+                            label = ~paste0(CVE_CONCAT, ": ", formatC(PCT_FORESTAL), big.mark = ","))
     
     m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
@@ -122,7 +135,7 @@ function(input, output) {
     # Layers control
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
-      overlayGroups = c("Actividad forestal", "Actividad agricola", "Actividad pecuaria", "Áreas de control"),
+      overlayGroups = c("Actividad forestal", "Actividad agricola", "Actividad pecuaria", "Terrenos totales"),
       options = layersControlOptions(collapsed = TRUE)
     )
     
