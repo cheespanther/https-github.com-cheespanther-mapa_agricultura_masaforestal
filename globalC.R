@@ -135,8 +135,8 @@ df_correlacion_todas <- cor(df_correlacion_mc_b, use = "everything",
 
 corrplot(df_correlacion_todas, method = "square")
 
-x <- df_correlacion_mc_b$`Tamaño terreno promedio`
-y <- df_correlacion_mc_b$`Héctareas Deforestadas`
+x <- df_correlacion_mc_b$TERRENO_PROM_TOT_16
+y <- df_correlacion_mc_b$PCT_PECUARIO
 
 # Plot with main and axis titles
 # Change point shape (pch = 19) and remove frame.
@@ -151,13 +151,13 @@ scatterplot(y ~ x)
 # Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables 
 library(GGally)
 
-tabla_cor1 <- df_correlacion_mc_b[,c(1,7,8,9,10,11,12,13)]
-tabla_cor2 <- df_correlacion_mc_b[,c(2,7,8,9,10,11,12,13)]
-tabla_cor3 <- df_correlacion_mc_b[,c(3,7,8,9,10,11,12,13)]
+tabla_cor1 <- df_correlacion_mc_c[,c(1,7,8,9,10,11,12,13)]
+tabla_cor2 <- df_correlacion_mc_c[,c(2,7,8,9,10,11,12,13)]
+tabla_cor3 <- df_correlacion_mc_c[,c(3,7,8,9,10,11,12,13)]
 tabla_cor4 <- df_correlacion_mc_b[,c(4,7,8,9,10,11,12,13)]
-tabla_cor5 <- df_correlacion_mc_b[,c(5,7,8,9,10,11,12,13)]
-tabla_cor6 <- df_correlacion_mc_b[,c(19,7,8,9,10,11,12,13)]
-tabla_cor7 <- df_correlacion_mc_b[,c(22,7,8,9,10,11,12,13)]
+tabla_cor5 <- df_correlacion_mc_c[,c(5,7,8,9,10,11,12,13)]
+tabla_cor6 <- df_correlacion_mc_c[,c(19,7,8,9,10,11,12,13)]
+tabla_cor7 <- df_correlacion_mc_c[,c(22,7,8,9,10,11,12,13)]
 
 
 # Create data 
@@ -165,7 +165,6 @@ data <- tabla_cor7
 
 # Check correlations (as scatterplots), distribution and print corrleation coefficient 
 ggpairs(data, title="Correlograma Cambios de uso de suelo vs. Cambio relativo agricola 07 a 16")
-
 
 # UNIR DATOS ANALÍTICOS CON DATOS GEOESPACIALES
 
@@ -180,3 +179,76 @@ pal_1 <- colorBin("viridis", domain = as.numeric(as.character(dfa$Terrenos_total
 pal_2 <- colorBin( palette="magma", domain=ac_mapa@data$NUM_TERR, na.color="transparent", bins=bins_pct)
 pal_3 <- colorBin( palette="YlOrBr", domain=ac_mapa@data$NUM_TERR, na.color="transparent", bins=bins_pct)
 
+
+# AGREGAR CAPA DE DATOS DE PRODUCCIÓN
+m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
+                        fillOpacity = 0.8,
+                        fillColor = ~pal_2(as.numeric(as.character(PCT_FORESTAL))),
+                        opacity = .3,
+                        weight = 1,
+                        color = "#4D4D4D",
+                        dashArray = "2",
+                        highlight = highlightOptions(
+                          weight = 1,
+                          color = "#4D4D4D",
+                          fillOpacity = 0.5,
+                          dashArray = "2",
+                          bringToFront = TRUE),
+                        group = "Actividad forestal",
+                        labelOptions = labelOptions(
+                          style = list("font-weight" = "normal", padding = "3px 8px"),
+                          textsize = "15px",
+                          direction = "auto"),
+                        label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(as.character(PCT_FORESTAL)), big.mark = ",")))
+
+m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
+                        fillOpacity = 0.8,
+                        fillColor = ~pal_3(as.numeric(as.character(PCT_AGRICOLA))),
+                        opacity = .3,
+                        weight = 1,
+                        color = "#4D4D4D",
+                        dashArray = "2",
+                        highlight = highlightOptions(
+                          weight = 1,
+                          color = "#4D4D4D",
+                          fillOpacity = 0.5,
+                          dashArray = "2",
+                          bringToFront = TRUE),
+                        group = "Actividad agricola",
+                        labelOptions = labelOptions(
+                          style = list("font-weight" = "normal", padding = "3px 8px"),
+                          textsize = "15px",
+                          direction = "auto"),
+                        label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(as.character((PCT_AGRICOLA))), big.mark = ",")))
+
+m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
+                        fillOpacity = 0.8,
+                        fillColor = ~pal_4(as.numeric(PCT_PECUARIO)),
+                        opacity = .3,
+                        weight = 1,
+                        color = "#4D4D4D",
+                        dashArray = "2",
+                        highlight = highlightOptions(
+                          weight = 1,
+                          color = "#4D4D4D",
+                          fillOpacity = 0.5,
+                          dashArray = "2",
+                          bringToFront = TRUE),
+                        group = "Actividad pecuaria",
+                        labelOptions = labelOptions(
+                          style = list("font-weight" = "normal", padding = "3px 8px"),
+                          textsize = "15px",
+                          direction = "auto"),
+                        label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(as.character(PCT_PECUARIO)), big.mark = ",")))
+
+m <- m %>%addLegend("bottomleft", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
+  addLegend("bottomleft", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
+  addLegend("bottomleft", pal = pal_3, values = ~PCT_AGRICOLA, opacity = 1.0) %>%
+  addLegend("bottomleft", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0)
+
+# Layers control
+m <- m %>% addLayersControl(
+  baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
+  overlayGroups = c("Actividad forestal", "Actividad agricola", "Actividad pecuaria", "Áreas de control"),
+  options = layersControlOptions(collapsed = TRUE)
+)

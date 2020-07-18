@@ -7,45 +7,37 @@ navbarPage("MAPA INTERACTIVO",
            ),
            tabPanel("Ver mapa",
                     bootstrapPage(
-                      tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
-                      leafletOutput("mapa", width = "100%", height = "100%")),
+                      
+                      leafletOutput("mapa")),
            ),
            navbarMenu("Datos",
-                      tabPanel("Datos Chiapas",   
+                      tabPanel("Datos Chiapas",
                                h2("Visualización de datos"),
                                fluidRow(
                                  column(4,
                                         selectInput("Cultivo",
-                                                    "Producto:",
+                                                    "Cultivo:",
                                                     c("Todos",
-                                                      unique(as.character(concentrado_comparativo_ac$CULTI_ESPE))))
+                                                      unique(as.character(comparado_sum_ac$CULTI_ESPE))))
                                  ),
                                  column(4,
                                         selectInput("Municipio",
                                                     "Municipio:",
                                                     c("Todos",
-                                                      unique(as.character(concentrado_comparativo_ac$NOM_MUN))))
+                                                      unique(as.character(comparado_sum_ac$NOM_MUN_07))))
                                  ),
                                  column(4,
                                         selectInput("Concat",
                                                     "Clave concatenado/Área de Control:",
                                                     c("Todos",
-                                                      unique(as.character(concentrado_comparativo_ac$CVE_CONCAT))))
+                                                      unique(as.character(comparado_sum_ac$CVE_CONCAT_07))))
                                  )
                                ),
-                               DT::dataTableOutput("tabla"),
+                               DT::dataTableOutput("tabla1"),
                       ),
                       tabPanel("Selva en Marqués de Comillas",
                                h2("Cambios de superficie con selva"),
-                               DT::dataTableOutput("tabla_a"),
-                      ),
-                      tabPanel("Resumen por producto",
-                               h2("Suma de superfice por producto"),
-                               DT::dataTableOutput("tabla_b"),
-                      ),
-                      tabPanel("Resumen por áreas de control",
-                               h2("Suma de superficie por área de control"),
-                               DT::dataTableOutput("tabla_c"),
+                               DT::dataTableOutput("tabla2"),
                       )
            )
 )
