@@ -17,7 +17,7 @@ library(geojsonio)
 
 # LECTURA DE SHAPE BASE DE ÁREAS DE CONTROL DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
-ac_mapa <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/ac_mapa_gen.geojson",  what = "sp")
+ac_mapa <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/ac_mapa.geojson",  what = "sp")
 colnames(ac_mapa@data) <- toupper(colnames(ac_mapa@data)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CVE_AGEB, ac_mapa@data$CVE_MZA, sep="_"))
 
@@ -40,8 +40,8 @@ colnames(concentrado16) <- toupper(colnames(concentrado16)) # CONVERTIR TODOS LO
 
 # CAMBIO DE USO DE SUELO EN EL MUNICIPIO DE MARQUÉS DE COMILLAS DE GITHUB
 # FUENTE: ELABORACIÓN PROPIA CON DATOS DEL INEGI
-datos_forestal_2 <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/cambios_2.csv")
-colnames(datos_forestal_2) <- toupper(colnames(datos_forestal_2)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
+datos_cambios <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/cambios_2.csv")
+colnames(datos_cambios) <- toupper(colnames(datos_cambios)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 
 # LECTURA DE DATOS DE LOS CAMBIOS DE USO DE SUELO Y VEGETACIÓN SERIE III Y SERIE VI
 # FUENTE: INEGI
@@ -66,7 +66,6 @@ esp_sum16 <- merge(concentrado16, esp_sum16, by = "CONCAT_ESPE")
 ac_sum16 <- ddply(concentrado16, .(CVE_CONCAT_16), numcolwise(sum))
 ac_sum07 <- merge(concentrado16, ac_sum16, by.x = "CVE_CONCAT_16", by.y="CVE_CONCAT_16")
 
-
 # CREACIÓN DE DATA FRAME CON LOS DATOS DE PRODUCCIÓN AGRÍCOLA, PECUARIA Y FORESTAL Y ÁREAS DE CONTROL
 dfa <- merge(ac_mapa@data, forestal[,c(10,col_f)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
 dfa <- merge(dfa, pecuario[,c(10,col_p)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
@@ -81,13 +80,13 @@ dfa$PCT_OCUPADO <- (dfa$PCT_FORESTAL + dfa$PCT_PECUARIO + dfa$PCT_AGRICOLA)
 
 # FILTRADO DE DATOS POR MUNICIPIO
 # colnames(dfa) <- c("cve_concat", "AC", "cve_Entidad", "Entidad", "cvd_Municipio", "Municipio", "cve_AGEB", "cve_Manzana", "Terrenos_totales", "Superficie_total", "Terrenos_con_actividad_forestal", "Terrenos_con_actividad_pecuaria", "Terrenos_con_actividad_agricola", "Superfice_carto_agricola", "Superficie_sembrada", "Terreno_promedio_ha_total", "Terreno_promedio_aricola", "Porcentaje_terrenos_forestal", "Porcentaje_terrenos_pecuario", "Porcentaje_terrenos_agricola", "Porcentaje_ocupado")
-dfa_mc <- subset(dfa, dfa$Municipio=="Marqués de Comillas")
+dfa_mc <- subset(dfa, dfa$NOM_MUN=="Marqués de Comillas")
 # write.csv(dfa, file = "df16_final.csv")
 # write.csv(dfa_mc, file = "df16_final_mc.csv")
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN AGRÍCOLA DEL 2007 DE GITHUB
 # FUENTE: CENSO AGROPECUARIO 2007
-concentrado07 <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/07_agricola_total.csv")
+concentrado07 <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/raw_data/07_agricola_total.csv")
 colnames(concentrado07) <- toupper(colnames(concentrado07)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 colnames(concentrado07)[colnames(concentrado07) %in% c("MUN", "CULTIVO")] <- c("NOM_MUN", "CULTI_ESPE")
 colnames(concentrado07) <- paste(colnames(concentrado07), "_07", sep="")
@@ -110,10 +109,6 @@ ac_sum07 <- merge(concentrado07, ac_sum07, by.x = "CVE_CONCAT_07", by.y="CVE_CON
 dfb <- merge(ac_mapa@data, ac_sum07[,c(1,7,8,9,10,11,12,15,16,17)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_07")
 dfb[is.na(dfb)] <- 0
 
-# REGRESAR AL ENTORNO GLOBAL DEL SISTEMA
-setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/")
-########################## ########################## ##########################
-
 # CONCATENAR DATOS 2007 Y 2016 PARA ESTIMAR CAMBIOS
 comparado <- merge(concentrado07, concentrado16, by.x = "CVE_CONCAT_07", by.y = "CVE_CONCAT_16", all.x = TRUE, all.y = TRUE)
 comparado_b <- comparado[,c(1:6, 36, 37, 10, 13, 14, 16, 17, 20, 24:27, 47:50)]
@@ -134,7 +129,7 @@ comparado_sum_ac$CAMBIO_AGRICOLA_RELATIVO <- as.numeric(as.character(comparado_s
 ac_mapa_b <- merge(ac_mapa@data, comparado_sum_ac, by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_07", all.y=TRUE, all.x = TRUE)
 
 # CORRELACIÓN DE DATOS
-df_correlacion_mc <- merge(dfa, datos_forestal_2, by.x = "CONTROL" , by.y = "ETIQUETAS DE FILA")
+df_correlacion_mc <- merge(dfa, datos_cambios, by.x = "CONTROL" , by.y = "ETIQUETAS DE FILA")
 df_correlacion_mc <- merge(df_correlacion_mc, comparado_sum_ac, by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_07")
 
 df_correlacion_mc_b <- df_correlacion_mc[,c(1,2,7,9,20:34)]
@@ -152,6 +147,7 @@ ac_mapa@data = data.frame(ac_mapa@data, dfa[match(ac_mapa@data[,"CVE_CONCAT"], d
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
 
 save(ac_mapa, file = "carto.RData")
+save(dfa, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado, comparado_b, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")
 save(df_correlacion_mc, df_correlacion_mc_b, df_correlacion_mc_c, df_correlacion_pearson, file = "correlaciones.RData")

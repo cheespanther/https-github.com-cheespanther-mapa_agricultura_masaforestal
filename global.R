@@ -3,6 +3,9 @@ load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masafor
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/Rdata/comparados.RData"))
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/datos/Rdata/correlaciones.RData"))
 
+ac_mapa@data = data.frame(ac_mapa@data, dfa[match(ac_mapa@data[,"CVE_CONCAT"], dfa[,"CVE_CONCAT"]),])
+
+
 bins_terrenos_tot <- c(0, 10, 20, 50, 100, 150, 200, Inf)
 bins_pct <- c(.1, .2, .3, .4, .5, .6, .7, .8, .9, 1)
 
