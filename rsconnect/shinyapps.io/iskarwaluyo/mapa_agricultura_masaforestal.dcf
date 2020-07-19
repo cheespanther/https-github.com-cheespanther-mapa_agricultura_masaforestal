@@ -1,0 +1,13 @@
+name: mapa_agricultura_masaforestal
+title: mapa_agricultura_masaforestal
+username:
+account: iskarwaluyo
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2587650
+bundleId: 3409392
+url: https://iskarwaluyo.shinyapps.io/mapa_agricultura_masaforestal/
+when: 1595180177.14958
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: generate_rdata.R

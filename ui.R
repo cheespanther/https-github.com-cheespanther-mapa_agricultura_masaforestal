@@ -7,7 +7,6 @@ navbarPage("MAPA INTERACTIVO",
            ),
            tabPanel("Ver mapa",
                     bootstrapPage(
-                      
                       leafletOutput("mapa")),
            ),
            navbarMenu("Datos",
@@ -58,6 +57,44 @@ navbarPage("MAPA INTERACTIVO",
                                  )
                                ),
                                DT::dataTableOutput("tabla2"),
+                      ),
+                      
+                      tabPanel("Comparación 2007 - 2016",
+                               h2("Comparación por área de control"),
+                               fluidRow(
+                                 column(4,
+                                        selectInput("CVE_MUN_07",
+                                                    "Municipio:",
+                                                    c("Todos",
+                                                      unique(as.character(comparado_sum_ac$CVE_MUN_07))))
+                                 ),
+                                 column(4,
+                                        selectInput("CVE_CONCAT_07",
+                                                    "Clave concatenado/Área de Control:",
+                                                    c("Todos",
+                                                      unique(as.character(comparado_sum_ac$CVE_CONCAT_07))))
+                                 )
+                               ),
+                               DT::dataTableOutput("tabla3"),
+                      ),
+                      
+                      tabPanel("Datos para correlaciones",
+                               h2("Datos para correlacoines"),
+                               DT::dataTableOutput("tabla4"),
+                      ),
+                      
+                      tabPanel("Correlaciones",
+                      pageWithSidebar(
+                        headerPanel('Gráfica de las variables'),
+                        sidebarPanel(
+                          selectInput('xcol', 'Variable X', vars),
+                          selectInput('ycol', 'Variable Y', vars, selected = vars[[2]])
+                          ),
+                        mainPanel(
+                          plotOutput('plot1')
+                        )
                       )
+                      )  
            )
+           
 )
