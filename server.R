@@ -6,12 +6,12 @@ function(input, output, session) {
   output$tabla1 = DT::renderDataTable({
     data <- concentrado07
     DT::datatable(
-    extensions = 'Buttons',
-    options = list(
-      dom = 'Bfrtip',
-      buttons = c('csv')
+      extensions = 'Buttons',
+      options = list(
+        dom = 'Bfrtip',
+        buttons = c('csv')
       ),
-        {
+      {
         if (input$CULTI_ESPE != "Todos") {
           data <- data[data$CULTI_ESPE == input$CULTI_ESPE,]
         }
@@ -24,7 +24,7 @@ function(input, output, session) {
         data
       }
     )
-})
+  })
   
   # VISUALIZACIÓN DE DATOS 2
   output$tabla2 = DT::renderDataTable({
@@ -59,7 +59,7 @@ function(input, output, session) {
         dom = 'Bfrtip',
         buttons = c('csv')
       ),
-        {
+      {
         if (input$CVE_MUN_07 != "Todos") {
           data <- data[data$CVE_MUN_07 == input$CVE_MUN_07,]
         }
@@ -78,26 +78,26 @@ function(input, output, session) {
     DT::datatable(df_correlacion_mc_b, options = list(paging = FALSE))
   )
   
-      
-      # VISUALIZAR CORRELACIONES
-      # Combine the selected variables into a new data frame
-      selectedData1 <<- reactive({
-        df_correlacion_mc_c[, c(input$xcol)]
-      })
-      
-      selectedData2 <<- reactive({
-        df_correlacion_mc_c[, c(input$ycol)]
-      })
-      
-      
-      clusters <- reactive({
-        kmeans(selectedData(), input$clusters) # NO SE USA
-      })
-      
-      output$plot1 <- renderPlot({
-        plot(selectedData1(), selectedData2())
-      })
-      
+  
+  # VISUALIZAR CORRELACIONES
+  # Combine the selected variables into a new data frame
+  selectedData1 <<- reactive({
+    df_correlacion_mc_c[, c(input$xcol)]
+  })
+  
+  selectedData2 <<- reactive({
+    df_correlacion_mc_c[, c(input$ycol)]
+  })
+  
+  
+  clusters <- reactive({
+    kmeans(selectedData(), input$clusters) # NO SE USA
+  })
+  
+  output$plot1 <- renderPlot({
+    plot(selectedData1(), selectedData2())
+  })
+  
   # GENERAR GRÁFICAS
   output$grafica1 <- renderPlot({
     corrplot(df_correlacion_pearson, method = "square")

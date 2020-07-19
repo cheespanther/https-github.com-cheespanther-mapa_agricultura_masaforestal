@@ -1,12 +1,17 @@
 navbarPage("MAPA INTERACTIVO",
-           navbarMenu("Inicio",
-                      tabPanel("Metadatos"),
-                      tabPanel("Grafica",
-                               h4("Resumen de los datos:"),
+           navbarMenu("Proyecto",
+                      tabPanel("Resumen",
+                               includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/resumen.html")
+                      ),
+                      tabPanel("Introducción",
+                               includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/introduccion.html")
+                               ),
+                      tabPanel("Justificación",
+                               h4("Justificación:"),
                                plotOutput('grafica1'),)
            ),
            tabPanel("Ver mapa",
-                    bootstrapPage(
+                    fluidPage(
                       leafletOutput("mapa")),
            ),
            navbarMenu("Datos",
