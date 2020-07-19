@@ -1,4 +1,4 @@
-# Sistema de Informaci&oacute;n Geogr&aacute;fica para la evaluaci&oacute;n de la grado de sustentabilidad de las pr&aacute;cticas agropecuarias del municipio Marqu&eacute;s de Comillas, Chiapas
+# Mapa interactivo de la correlación entre las prácticas agropecuarias y los cambios de masa forestal en el municipio de Marqu&eacute;s de Comillas, Chiapas
 
 
 Applicación R-Shiny para visualizar: 
