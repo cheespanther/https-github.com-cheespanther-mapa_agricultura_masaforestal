@@ -6,6 +6,9 @@ navbarPage("MAPA INTERACTIVO",
                       tabPanel("Introducción",
                                includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/introduccion.html")
                                ),
+                      tabPanel("Introducción",
+                               includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/index.html")
+                      ),
                       tabPanel("Justificación",
                                h4("Justificación:"),
                                plotOutput('grafica1'),)
