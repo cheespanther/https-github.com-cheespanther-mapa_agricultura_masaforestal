@@ -5,9 +5,10 @@ navbarPage("MAPA INTERACTIVO",
                       ),
                       tabPanel("Introducción",
                                includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/introduccion.html")
-                               ),
+                      ),
                       tabPanel("Justificación",
                                h4("Justificación:"),
+                               includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/introduccion.html"),
                                plotOutput('grafica1'),)
            ),
            tabPanel("Ver mapa",
@@ -89,16 +90,16 @@ navbarPage("MAPA INTERACTIVO",
                       ),
                       
                       tabPanel("Correlaciones",
-                      pageWithSidebar(
-                        headerPanel('Gráfica de las variables'),
-                        sidebarPanel(
-                          selectInput('xcol', 'Variable X', vars),
-                          selectInput('ycol', 'Variable Y', vars, selected = vars[[2]])
-                          ),
-                        mainPanel(
-                          plotOutput('plot1')
-                        )
-                      )
+                               pageWithSidebar(
+                                 headerPanel('Gráfica de las variables'),
+                                 sidebarPanel(
+                                   selectInput('xcol', 'Variable X', vars),
+                                   selectInput('ycol', 'Variable Y', vars, selected = vars[[2]])
+                                 ),
+                                 mainPanel(
+                                   plotOutput('plot1')
+                                 )
+                               )
                       )  
            )
            
