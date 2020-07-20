@@ -23,6 +23,7 @@ ac_mapa <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agri
 colnames(ac_mapa@data) <- toupper(colnames(ac_mapa@data)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CVE_AGEB, ac_mapa@data$CVE_MZA, sep="_"))
 ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
+ac_mapa_mc <- subset(ac_mapa, ac_mapa@data$NOM_MUN=="Marqués de Comillas")
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN PECUARIAS DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
@@ -147,11 +148,13 @@ df_correlacion_pearson <- cor(df_correlacion_mc_c, method = "pearson")
 # UNIR DATOS ANALÍTICOS CON DATOS GEOESPACIALES
 
 ac_mapa@data = data.frame(ac_mapa@data, dfa[match(ac_mapa@data[,"CVE_CONCAT"], dfa[,"CVE_CONCAT"]),])
+ac_mapa_mc@data = data.frame(ac_mapa_mc@data, dfa_mc[match(ac_mapa_mc@data[,"CVE_CONCAT"], dfa_mc[,"CVE_CONCAT"]),])
+
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
 
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/data/raw_data")
 
-save(ac_mapa, file = "carto.RData")
+save(ac_mapa, ac_mapa_mc, file = "carto.RData")
 save(dfa, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado, comparado_b, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")

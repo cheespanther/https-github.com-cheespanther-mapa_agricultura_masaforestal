@@ -100,25 +100,24 @@ function(input, output, session) {
   
   # GENERAR GRÁFICAS
   output$grafica1 <- renderPlot({
-    corrplot(df_correlacion_pearson, method = "square")
     scatterplot(df_correlacion_mc_c$PCT_AGRICOLA, df_correlacion_mc$DEFORESTADA)
   })
   
   # GENERAR MAPA
   output$mapa <- renderLeaflet({
     
-    m <-leaflet(ac_mapa) %>%
+    m <-leaflet(ac_mapa_mc) %>%
       addTiles(group = "OSM (default)") %>%
       addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
       addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite")
     
-    m <- m %>%  addPolygons(data = ac_mapa, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+    m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
                             fillColor = ~pal_1(as.numeric(TERRENOS)),
                             group = "Terrenos totales",
                             label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(as.character(TERRENOS)), big.mark = ",")))
     
     # AGREGAR CAPA DE DATOS DE PRODUCCIÓN
-    m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
+    m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
                             fillColor = ~pal_2(PCT_FORESTAL),
                             opacity = .3,
@@ -137,10 +136,10 @@ function(input, output, session) {
                               textsize = "15px",
                               direction = "auto"),
                             label = ~paste0(CVE_CONCAT, ": ", formatC(PCT_FORESTAL), big.mark = ","))
-    
-    m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
+  
+    m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
-                            fillColor = ~pal_3(as.numeric(as.character(PCT_AGRICOLA))),
+                            fillColor = ~pal_3(PCT_AGRICOLA),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -156,11 +155,11 @@ function(input, output, session) {
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"),
-                            label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(as.character((PCT_AGRICOLA))), big.mark = ",")))
+                            label = ~paste0(CVE_CONCAT, ": ", formatC(PCT_AGRICOLA), big.mark = ","))
     
-    m <- m %>%  addPolygons(data = ac_mapa, stroke = TRUE, smoothFactor = 0.3, 
+    m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
-                            fillColor = ~pal_4(as.numeric(PCT_PECUARIO)),
+                            fillColor = ~pal_4(PCT_PECUARIO),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -176,17 +175,17 @@ function(input, output, session) {
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"),
-                            label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(as.character(PCT_PECUARIO)), big.mark = ",")))
+                            label = ~paste0(CVE_CONCAT, ": ", formatC(PCT_PECUARIO), big.mark = ","))
     
     m <- m %>%addLegend("bottomleft", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
       addLegend("bottomleft", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
       addLegend("bottomleft", pal = pal_3, values = ~PCT_AGRICOLA, opacity = 1.0) %>%
-      addLegend("bottomleft", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0)
+      addLegend("bottomleft", pal = pal_3, values = ~PCT_PECUARIO, opacity = 1.0)
     
     # Layers control
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
-      overlayGroups = c("Actividad forestal", "Actividad agricola", "Actividad pecuaria", "Terrenos totales"),
+      overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales"),
       options = layersControlOptions(collapsed = TRUE)
     )
     

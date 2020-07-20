@@ -5,9 +5,9 @@ account: iskarwaluyo
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2587650
-bundleId: 3409392
+bundleId: 3410196
 url: https://iskarwaluyo.shinyapps.io/mapa_agricultura_masaforestal/
-when: 1595180177.14958
+when: 1595205977.34422
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: generate_rdata.R

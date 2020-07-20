@@ -1,0 +1,13 @@
+name: mapa_agricultura_masaforestal_comillas
+title: mapa_agricultura_masaforestal_comillas
+username:
+account: iskarwaluyo
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2591111
+bundleId: 3410237
+url: https://iskarwaluyo.shinyapps.io/mapa_agricultura_masaforestal_comillas/
+when: 1595207370.24376
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: generate_rdata.R|README.md
