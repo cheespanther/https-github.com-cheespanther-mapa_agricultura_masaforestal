@@ -136,7 +136,7 @@ function(input, output, session) {
                               textsize = "15px",
                               direction = "auto"),
                             label = ~paste0(CVE_CONCAT, ": ", formatC(PCT_FORESTAL), big.mark = ","))
-  
+    
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
                             fillColor = ~pal_3(PCT_AGRICOLA),
@@ -177,6 +177,27 @@ function(input, output, session) {
                               direction = "auto"),
                             label = ~paste0(CVE_CONCAT, ": ", formatC(PCT_PECUARIO), big.mark = ","))
     
+    # AGREGAR CAPA DE DATOS DE AUTOCORRELACIÓN
+    m <- m %>%  addPolygons(data = autocorr_1, stroke = TRUE, smoothFactor = 0.3, 
+                            fillOpacity = 0.8,
+                            fillColor = ~pal_0(ha_1),
+                            opacity = .3,
+                            weight = 1,
+                            color = "#4D4D4D",
+                            dashArray = "2",
+                            highlight = highlightOptions(
+                              weight = 1,
+                              color = "#4D4D4D",
+                              fillOpacity = 0.5,
+                              dashArray = "2",
+                              bringToFront = TRUE),
+                            group = "Autocorr 1",
+                            labelOptions = labelOptions(
+                              style = list("font-weight" = "normal", padding = "3px 8px"),
+                              textsize = "15px",
+                              direction = "auto"),
+                            label = ~paste0(Id, ": ", formatC(ha_1), big.mark = ","))
+    
     m <- m %>%addLegend("bottomleft", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
       addLegend("bottomleft", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
       addLegend("bottomleft", pal = pal_3, values = ~PCT_AGRICOLA, opacity = 1.0) %>%
@@ -185,7 +206,7 @@ function(input, output, session) {
     # Layers control
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
-      overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales"),
+      overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales", "Autocorr 1"),
       options = layersControlOptions(collapsed = TRUE)
     )
     

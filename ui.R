@@ -15,7 +15,7 @@ navbarPage("MAPA INTERACTIVO",
                                includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/justificacion.html"),
                                plotOutput('grafica1'),)
            ),
-
+           
            navbarMenu("Datos",
                       tabPanel("Producción agrícola 2007",
                                h2("Visualización de datos agrícolas del 2007"),
