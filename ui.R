@@ -1,4 +1,8 @@
 navbarPage("MAPA INTERACTIVO",
+           tabPanel("Ver mapa",
+                    fluidPage(h2("Mapa interactivo de la correlación entre las prácticas agropecuarias y los cambios de masa forestal en el municipio de Marqués de Comillas, Chiapas"),
+                              leafletOutput("mapa")),
+           ),
            navbarMenu("Proyecto",
                       tabPanel("Resumen",
                                includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/resumen.html")
@@ -8,13 +12,10 @@ navbarPage("MAPA INTERACTIVO",
                       ),
                       tabPanel("Justificación",
                                h4("Justificación:"),
-                               includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/introduccion.html"),
+                               includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/justificacion.html"),
                                plotOutput('grafica1'),)
            ),
-           tabPanel("Ver mapa",
-                    fluidPage(
-                      leafletOutput("mapa")),
-           ),
+
            navbarMenu("Datos",
                       tabPanel("Producción agrícola 2007",
                                h2("Visualización de datos agrícolas del 2007"),
