@@ -25,6 +25,9 @@ ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CV
 ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
 ac_mapa_mc <- subset(ac_mapa, ac_mapa@data$NOM_MUN=="Marqués de Comillas")
 
+autocorr_1 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr",  what = "sp")
+
+
 # LECTURA DE DATOS DE LA PRODUCCIÓN PECUARIAS DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
 pecuario <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/16_pecuario.csv")
