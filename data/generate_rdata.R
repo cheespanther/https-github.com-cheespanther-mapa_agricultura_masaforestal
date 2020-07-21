@@ -139,8 +139,6 @@ comparado_ac <- merge(concentrado07, concentrado16, by.x = "CVE_CONCAT_07", by.y
 casos_comparables_ac <- comparado_ac[complete.cases(comparado_ac),]
 casos_comparables_ac <- casos_comparables_ac[,c(1, 3, 4, 5, 6, 7, 9, 11, 47, 14, 15, 17, 21, 25, 36, 37, 48, 49, 50, 53, 54, 55)]
 
-
-
 # UN "CASO COMPARABLE" ES AQUEL SIN CELDAS VACÍAS
 comparado_sum_ac <- ddply(casos_comparables, .(CVE_CONCAT_07), numcolwise(sum))
 comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA <- as.numeric(as.character(comparado_sum_ac$SUP_SEMB_16)) - as.numeric(as.character(comparado_sum_ac$SUP_SEMB_07))
@@ -168,6 +166,7 @@ ac_mapa_mc@data = data.frame(ac_mapa_mc@data, dfa_mc[match(ac_mapa_mc@data[,"CVE
 
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
 
+# CREAR ARCHIVOS TIPO RData PARA ALMACENAR LOS RESULTADOS DEL PROCESAMIENTO DE LOS DATOS
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/data/raw_data")
 
 save(ac_mapa, ac_mapa_mc, file = "carto.RData")
@@ -176,4 +175,5 @@ save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado, comparado_b, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")
 save(df_correlacion_mc, df_correlacion_mc_b, df_correlacion_mc_c, df_correlacion_pearson, file = "correlaciones.RData")
 
+# REGRESAR AL ENTORNO GENERAL LOCAL
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal")

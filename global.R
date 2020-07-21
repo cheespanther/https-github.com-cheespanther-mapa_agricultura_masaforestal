@@ -35,8 +35,6 @@ pal_3 <- colorBin( palette="YlOrBr", domain=ac_mapa@data$PCT_AGRICOLA, na.color=
 pal_4 <- colorBin( palette="RdPu", domain=ac_mapa@data$PCT_PECUARIO, na.color="transparent", bins=bins_pct)
 
 
-# k-means only works with numerical variables,
-# so don't give the user the option to select
-# a categorical variable
+# CREAR VARIABLES DE SELECCIÓN PRA LAS GRÁFICAS DE CORRELACIÓN
 vars <- colnames(df_correlacion_mc_c)
 
