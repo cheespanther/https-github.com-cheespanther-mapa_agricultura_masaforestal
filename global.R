@@ -19,6 +19,7 @@ load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masafor
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/comparados.RData"))
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/correlaciones.RData"))
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/datos.RData"))
+load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/autocorrelaciones.RData"))
 
 
 ac_mapa@data = data.frame(ac_mapa@data, dfa[match(ac_mapa@data[,"CVE_CONCAT"], dfa[,"CVE_CONCAT"]),])
@@ -30,7 +31,6 @@ bins_autocorr <- c(0, 10, 20, 50, 100)
 
 # PALETA DE COLORES
 pal_0 <- colorBin( palette="RdYlGn", domain = as.numeric(as.character(autocorr_1@data$ha_1)), bins = bins_autocorr)
-
 pal_1 <- colorBin( palette="viridis", domain = as.numeric(as.character(ac_mapa@data$TERRENOS)), bins = bins_terrenos_tot)
 pal_2 <- colorBin( palette="YlGn", domain=ac_mapa@data$PCT_FORESTAL, na.color="transparent", bins=bins_pct)
 pal_3 <- colorBin( palette="YlOrBr", domain=ac_mapa@data$PCT_AGRICOLA, na.color="transparent", bins=bins_pct)
