@@ -95,7 +95,8 @@ navbarPage("MAPA INTERACTIVO",
                                  headerPanel('Gráfica de las variables'),
                                  sidebarPanel(
                                    selectInput('xcol', 'Variable X', vars),
-                                   selectInput('ycol', 'Variable Y', vars, selected = vars[[2]])
+                                   selectInput('ycol', 'Variable Y', vars, selected = vars[[2]]),
+                                   selectInput('tamano', 'Tamaño', vars, selected = vars[[3]])
                                  ),
                                  mainPanel(
                                    plotOutput('plot1')

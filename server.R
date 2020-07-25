@@ -89,13 +89,18 @@ function(input, output, session) {
     df_correlacion_mc_c[, c(input$ycol)]
   })
   
+  selectedData3 <<- reactive({
+    df_correlacion_mc_c[, c(input$tamano)]
+  })
+  
   
   clusters <- reactive({
-    kmeans(selectedData(), input$clusters) # NO SE USA
+    kmeans(selectedData(), input$tamano) # NO SE USA
   })
   
   output$plot1 <- renderPlot({
-    plot(selectedData1(), selectedData2())
+    ggplot(data, aes(x=selectedData1(), y=selectedData2(), size = selectedData3())) +
+      geom_point(alpha=0.7)
   })
   
   # GENERAR GRÁFICAS
@@ -113,12 +118,11 @@ function(input, output, session) {
     
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
                             fillColor = ~pal_1(as.numeric(TERRENOS)),
-                            group = "Terrenos totales",
-                            label = ~paste0(CVE_CONCAT, ": ", formatC(as.numeric(as.character(TERRENOS)), big.mark = ",")))
-    
+                            group = "Terrenos totales")
+
     # AGREGAR CAPA DE DATOS DE PRODUCCIÓN
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
-                            fillOpacity = 0.8,
+                            fillOpacity = 0.5,
                             fillColor = ~pal_2(PCT_FORESTAL),
                             opacity = .3,
                             weight = 1,
@@ -127,16 +131,16 @@ function(input, output, session) {
                             highlight = highlightOptions(
                               weight = 1,
                               color = "#4D4D4D",
-                              fillOpacity = 0.5,
+                              fillOpacity = 0.1,
                               dashArray = "2",
                               bringToFront = TRUE),
                             group = "Actividad forestal",
+                           # popup = popupGraph(PCT_FORESTAL),
                             labelOptions = labelOptions(
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
-                              direction = "auto"),
-                            label = ~paste0(CVE_CONCAT, ": ", formatC(PCT_FORESTAL), big.mark = ","))
-    
+                              direction = "auto"))
+
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
                             fillColor = ~pal_3(PCT_AGRICOLA),
@@ -154,9 +158,8 @@ function(input, output, session) {
                             labelOptions = labelOptions(
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
-                              direction = "auto"),
-                            label = ~paste0(CVE_CONCAT, ": ", formatC(PCT_AGRICOLA), big.mark = ","))
-    
+                              direction = "auto"))
+
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
                             fillColor = ~pal_4(PCT_PECUARIO),
@@ -174,8 +177,7 @@ function(input, output, session) {
                             labelOptions = labelOptions(
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
-                              direction = "auto"),
-                            label = ~paste0(CVE_CONCAT, ": ", formatC(PCT_PECUARIO), big.mark = ","))
+                              direction = "auto"))
     
     # AGREGAR CAPA DE DATOS DE AUTOCORRELACIÓN
     m <- m %>%  addPolygons(data = autocorr_1, stroke = TRUE, smoothFactor = 0.3, 
@@ -201,7 +203,7 @@ function(input, output, session) {
     m <- m %>%addLegend("bottomleft", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
       addLegend("bottomleft", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
       addLegend("bottomleft", pal = pal_3, values = ~PCT_AGRICOLA, opacity = 1.0) %>%
-      addLegend("bottomleft", pal = pal_3, values = ~PCT_PECUARIO, opacity = 1.0)
+      addLegend("bottomleft", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0)
     
     # Layers control
     m <- m %>% addLayersControl(

@@ -1,0 +1,48 @@
+file format : IDRISI Raster A.1
+file title  : 
+data type   : byte
+file type   : binary
+columns     : 2302
+rows        : 2367
+ref. system : plane
+ref. units  : meters
+unit dist.  : 1.
+min. X      : 3680336.209735
+max. X      : 3726376.209735
+min. Y      : 500043.679614
+max. Y      : 547383.679614
+pos'n error : unknown
+resolution  : unknown
+min. value  : 1.
+max. value  : 255.
+display min : 1.
+display max : 255.
+value unit  : unknown
+value error : unknown
+flag value  : unknown
+flag def'n  : unknown
+legend cats : 0
+lineage     : This file was created by the ErdIdris module with the command line: 5*D:\diseño_proyectos\climatologia\shp_marq\serie_6_rep_PolygonToRaster1.img*D:\diseño_proyectos\climatologia\shp_marq\serie_6_rep.rst
+comment     : Source File Contains the Following Additional Information: 
+comment     : The datum name: ITRF_1992
+comment     : The datum type: EPRJ_DATUM_PARAMETRIC
+comment     : Parameter 1: 0.00000
+comment     : Parameter 2: 0.00000
+comment     : Parameter 3: 0.30543
+comment     : Parameter 4: 0.51487
+comment     : Parameter 5: -1.78024
+comment     : Parameter 6: 0.20944
+comment     : Parameter 7: 2500000.00000
+comment     : The name of the spheroid/ellipsoid: GRS_1980
+comment     : The major-semi axis of the ellipsoid in meters: 6378137.000
+comment     : The minor-semi axis of the ellipsoid in meters: 6356752.314
+comment     : The eccentricity of the ellipsoid, squared: 0.006694
+comment     : The radius of the spheroid in meters: 6378137.000
+comment     : Lambert Conformal Conic
+comment     : Latitude of 1st Standard Parallel 0.305433
+comment     : Latitude of 2ed Standard Parallel 0.514872
+comment     : Longitude of central meridian -1.780236
+comment     : Latitude of origin of projection 0.209440
+comment     : False Easting 2500000.000000
+comment     : False Northing 0.000000
+comment     : The zone number for internal State Plane or UTM projections: 0
