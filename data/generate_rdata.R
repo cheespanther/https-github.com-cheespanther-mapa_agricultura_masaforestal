@@ -29,8 +29,10 @@ ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CV
 ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
 ac_mapa_mc <- subset(ac_mapa, ac_mapa@data$NOM_MUN=="Marqués de Comillas")
 
-autocorr_1 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr",  what = "sp")
+autocorr_1 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr_1.geojson",  what = "sp")
 
+serie_3 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_3.geojson",  what = "sp")
+serie_6 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_6.geojson",  what = "sp")
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN PECUARIAS DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
@@ -72,22 +74,22 @@ concentrado16$PCT_SUPSEM <- as.numeric(as.character(concentrado16$SUP_SEMB)) / a
 colnames(concentrado16) <- paste(colnames(concentrado16), "_16", sep="")
 concentrado16$CULTI_ESPE <- laply(concentrado16$CULTI_ESPE_16, toupper) # CONVERTIR TODOS LOS VALORES A MAYUSCULAS
 concentrado16$CONCAT_ESPE <- paste(concentrado16$CVE_CONCAT, concentrado16$CULTI_ESPE, sep="_")
+concentrado16$PCT_AGRICOLA <- as.numeric(as.character(concentrado16$NUM_TERR_16))/as.numeric(as.character(concentrado16$TERRENOS_16))
 
 esp_sum16 <- ddply(concentrado16, .(CONCAT_ESPE), numcolwise(sum))
-esp_sum16 <- merge(concentrado16, esp_sum16, by = "CONCAT_ESPE")
+esp_sum16 <- merge(ac_mapa@data, esp_sum16, by = "CONCAT_ESPE")
 ac_sum16 <- ddply(concentrado16, .(CVE_CONCAT_16), numcolwise(sum))
 ac_sum16 <- merge(concentrado16, ac_sum16, by.x = "CVE_CONCAT_16", by.y="CVE_CONCAT_16")
 
 # CREACIÓN DE DATA FRAME CON LOS DATOS DE PRODUCCIÓN AGRÍCOLA, PECUARIA Y FORESTAL Y ÁREAS DE CONTROL
 df_ac <- merge(ac_mapa@data, forestal[,c(10,col_f)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
 df_ac <- merge(df_ac, pecuario[,c(10,col_p)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
-df_ac <- merge(df_ac, ac_sum16[,c(1,10,11,12,15,16,17,18)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_16", all.y=TRUE, all.x = TRUE)
+df_ac <- merge(df_ac, ac_sum16[,c(1,10,11,12,16,19,20:23,)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_16", all.y=TRUE, all.x = TRUE)
 df_ac[is.na(df_ac)] <- 0
 
 # CÁLCULO DE PORCENTAJES DE TERRENOS OCUPADOS PARA LA ACTIVIDAD FORESTAL, AGRÍCOLA Y PECAUARIA Y SU SUMA (PCT_OCUPADO)
 df_ac$PCT_FORESTAL <- df_ac$F_TOTAL/as.numeric(as.character(df_ac$TERRENOS))
 df_ac$PCT_PECUARIO <- df_ac$P_TOTAL/as.numeric(as.character(df_ac$TERRENOS))
-df_ac$PCT_AGRICOLA <- df_ac$TERRENOS_16.x/as.numeric(as.character(df_ac$TERRENOS))
 df_ac$PCT_OCUPADO <- (df_ac$PCT_FORESTAL + df_ac$PCT_PECUARIO + df_ac$PCT_AGRICOLA)
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN AGRÍCOLA DEL 2007 DE GITHUB
@@ -170,7 +172,7 @@ ac_mapa_mc@data = data.frame(ac_mapa_mc@data, dfa_mc[match(ac_mapa_mc@data[,"CVE
 # CREAR ARCHIVOS TIPO RData PARA ALMACENAR LOS RESULTADOS DEL PROCESAMIENTO DE LOS DATOS
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/data/raw_data")
 
-save(ac_mapa, ac_mapa_mc, file = "carto.RData")
+save(ac_mapa, ac_mapa_mc, serie_3, serie_6, file = "carto.RData")
 save(dfa, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado, comparado_b, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")

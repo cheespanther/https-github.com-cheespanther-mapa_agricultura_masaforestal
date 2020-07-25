@@ -200,6 +200,14 @@ function(input, output, session) {
                               direction = "auto"),
                             label = ~paste0(Id, ": ", formatC(ha_1), big.mark = ","))
     
+    m <- m %>%  addPolygons(data = serie_3, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                            fillColor = ~pal_5(as.numeric(VALOR)),
+                            group = "Serie 3")
+    
+    m <- m %>%  addPolygons(data = serie_6, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                            fillColor = ~pal_6(as.numeric(VALOR)),
+                            group = "Serie 6")
+    
     m <- m %>%addLegend("bottomleft", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
       addLegend("bottomleft", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
       addLegend("bottomleft", pal = pal_3, values = ~PCT_AGRICOLA, opacity = 1.0) %>%
@@ -208,7 +216,7 @@ function(input, output, session) {
     # Layers control
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
-      overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales", "Autocorr 1"),
+      overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales", "Autocorr 1", "Serie 3", "Serie 6"),
       options = layersControlOptions(collapsed = TRUE)
     )
     
