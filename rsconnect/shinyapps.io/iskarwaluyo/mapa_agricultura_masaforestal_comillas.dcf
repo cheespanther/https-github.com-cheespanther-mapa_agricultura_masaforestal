@@ -5,9 +5,9 @@ account: iskarwaluyo
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2591111
-bundleId: 3435915
+bundleId: 3435932
 url: https://iskarwaluyo.shinyapps.io/mapa_agricultura_masaforestal_comillas/
-when: 1595725000.32026
+when: 1595725451.24341
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: README.md
