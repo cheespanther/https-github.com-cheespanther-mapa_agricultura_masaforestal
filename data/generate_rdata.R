@@ -84,13 +84,15 @@ ac_sum16 <- merge(concentrado16, ac_sum16, by.x = "CVE_CONCAT_16", by.y="CVE_CON
 # CREACIÓN DE DATA FRAME CON LOS DATOS DE PRODUCCIÓN AGRÍCOLA, PECUARIA Y FORESTAL Y ÁREAS DE CONTROL
 df_ac <- merge(ac_mapa@data, forestal[,c(10,col_f)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
 df_ac <- merge(df_ac, pecuario[,c(10,col_p)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
-df_ac <- merge(df_ac, ac_sum16[,c(1,10,11,12,16,19,20:23,)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_16", all.y=TRUE, all.x = TRUE)
+df_ac <- merge(df_ac, ac_sum16[,c(1,10,11,12,16,19,20:24)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_16", all.y=TRUE, all.x = TRUE)
 df_ac[is.na(df_ac)] <- 0
 
 # CÁLCULO DE PORCENTAJES DE TERRENOS OCUPADOS PARA LA ACTIVIDAD FORESTAL, AGRÍCOLA Y PECAUARIA Y SU SUMA (PCT_OCUPADO)
 df_ac$PCT_FORESTAL <- df_ac$F_TOTAL/as.numeric(as.character(df_ac$TERRENOS))
 df_ac$PCT_PECUARIO <- df_ac$P_TOTAL/as.numeric(as.character(df_ac$TERRENOS))
-df_ac$PCT_OCUPADO <- (df_ac$PCT_FORESTAL + df_ac$PCT_PECUARIO + df_ac$PCT_AGRICOLA)
+df_ac$PCT_OCUPADO <- (df_ac$PCT_FORESTAL + df_ac$PCT_PECUARIO + df_ac$PCT_AGRICOLA.x)
+df_ac[is.na(df_ac)] <- 0
+
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN AGRÍCOLA DEL 2007 DE GITHUB
 # FUENTE: CENSO AGROPECUARIO 2007
@@ -128,7 +130,7 @@ sum_comparables_esp <- ddply(casos_comparables_esp, .(CONCAT_ESPE), numcolwise(s
 casos_comparables_esp <- casos_comparables_esp[,c(1, 3, 4, 5, 6, 7, 10, 11, 47, 14, 15, 17, 21, 25, 36, 37, 48, 49, 50, 53, 54, 55)]
 
 # UN "CASO COMPARABLE" ES AQUEL SIN CELDAS VACÍAS
-comparado_sum_esp <- ddply(casos_comparables, .(CONCAT_ESPE), numcolwise(sum))
+comparado_sum_esp <- ddply(casos_comparables_esp, .(CONCAT_ESPE), numcolwise(sum))
 comparado_sum_esp$CAMBIO_AGRICOLA <- as.numeric(as.character(comparado_sum_esp$SUP_SEMB_16)) - as.numeric(as.character(comparado_sum_esp$SUP_SEMB_07))
 comparado_sum_esp$CAMBIO_AGRICOLA_RELATIVO <- as.numeric(as.character(comparado_sum_esp$CAMBIO_AGRICOLA)) / as.numeric(as.character(comparado_sum_esp$SUP_SEMB_07))
 
@@ -140,10 +142,9 @@ comparado_ac <- merge(concentrado07, concentrado16, by.x = "CVE_CONCAT_07", by.y
 
 # CONCATENAR CASOS COMPARABLES QUE TENGAN DATOS DE CULTIVO Y ÁREA DE CONTROL QUE COINCIDAN
 casos_comparables_ac <- comparado_ac[complete.cases(comparado_ac),]
-casos_comparables_ac <- casos_comparables_ac[,c(1, 3, 4, 5, 6, 7, 9, 11, 47, 14, 15, 17, 21, 25, 36, 37, 48, 49, 50, 53, 54, 55)]
 
 # UN "CASO COMPARABLE" ES AQUEL SIN CELDAS VACÍAS
-comparado_sum_ac <- ddply(casos_comparables, .(CVE_CONCAT_07), numcolwise(sum))
+comparado_sum_ac <- ddply(casos_comparables_ac, .(CVE_CONCAT_07), numcolwise(sum))
 comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA <- as.numeric(as.character(comparado_sum_ac$SUP_SEMB_16)) - as.numeric(as.character(comparado_sum_ac$SUP_SEMB_07))
 comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA_REL <- comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA / comparado_sum_ac$SUP_SEMB_07
 
