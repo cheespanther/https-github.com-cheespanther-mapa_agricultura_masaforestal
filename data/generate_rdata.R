@@ -151,7 +151,7 @@ comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA_REL <- comparado_sum_ac$CAMBIO_SUP_SEM
 ac_mapa_b <- merge(ac_mapa@data, comparado_sum_ac, by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_07", all.y=TRUE, all.x = TRUE)
 
 # CORRELACIÓN DE DATOS
-df_correlacion_mc <- merge(dfa, datos_cambios, by.x = "CONTROL" , by.y = "ETIQUETAS DE FILA")
+df_correlacion_mc <- merge(df_ac, datos_cambios, by.x = "CONTROL" , by.y = "ETIQUETAS DE FILA")
 df_correlacion_mc <- merge(df_correlacion_mc, comparado_sum_ac, by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_07", all.x= TRUE)
 df_correlacion_mc <- df_correlacion_mc[,c(1:15, 17:31, 36:38, 40, 42, 47, 49, 50)]
   
@@ -159,14 +159,18 @@ df_correlacion_mc_b <- df_correlacion_mc[,c(1,2,6,9,16:38)]
 
 
 df_correlacion_mc_c <- df_correlacion_mc[,c(16:38)]
+df_correlacion_mc_d <- df_correlacion_mc_c[complete.cases(df_correlacion_mc_d),]
+
+df_correlacion_mc_d <- df_correlacion_mc_c[,c(1, 2, 3, 6:15)]
+
 # colnames(df_correlacion_mc_b) <- c("Tamaño terreno promedio", "Porcentaje Terrenos Forestales", "Porcentaje Terrenos Pecuarios", "Porcentaje Terrenos Agricolas", "Porcentaje Terrenos Ocupados", "Héctareas Productivas", "Héctareas Conservadas", "Héctareas Deforestadas", "Héctareas Degradadas", "Héctareas Reforestadas", "Héctareas Sin Cambio", "Héctareas de Transición", "Héctareas Urbanizadas", "Total General", "Porcentaje Degradado", "Superficie total est", "Superficie Total Cartográfica 07", "Superficie Sembrada 07", "Superficie Total Cartográfica 16", "Superficie Sembrada 16","Cambio Agrícola en Héctareas", "Cambio Agrícola Relativo")
 
-df_correlacion_pearson <- cor(df_correlacion_mc_c, method = "pearson")
+df_correlacion_pearson <- cor(df_correlacion_mc_d, method = "pearson")
 
 # UNIR DATOS ANALÍTICOS CON DATOS GEOESPACIALES
 
-ac_mapa@data = data.frame(ac_mapa@data, dfa[match(ac_mapa@data[,"CVE_CONCAT"], dfa[,"CVE_CONCAT"]),])
-ac_mapa_mc@data = data.frame(ac_mapa_mc@data, dfa_mc[match(ac_mapa_mc@data[,"CVE_CONCAT"], dfa_mc[,"CVE_CONCAT"]),])
+ac_mapa@data = data.frame(ac_mapa@data, df_ac[match(ac_mapa@data[,"CVE_CONCAT"], df_ac[,"CVE_CONCAT"]),])
+ac_mapa_mc@data = data.frame(ac_mapa_mc@data, df_ac[match(ac_mapa_mc@data[,"CVE_CONCAT"], df_ac[,"CVE_CONCAT"]),])
 
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
 
@@ -174,9 +178,9 @@ ac_mapa_mc@data = data.frame(ac_mapa_mc@data, dfa_mc[match(ac_mapa_mc@data[,"CVE
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/data/raw_data")
 
 save(ac_mapa, ac_mapa_mc, serie_3, serie_6, file = "carto.RData")
-save(dfa, file = "datos.RData")
+save(df_ac, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
-save(comparado, comparado_b, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")
+save(comparado_ac, comparado_esp, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")
 save(df_correlacion_mc, df_correlacion_mc_b, df_correlacion_mc_c, df_correlacion_pearson, file = "correlaciones.RData")
 save(autocorr_1, file = "autocorrelaciones.RData")
 
