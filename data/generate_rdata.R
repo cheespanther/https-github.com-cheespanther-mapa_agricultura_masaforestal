@@ -159,7 +159,7 @@ df_correlacion_mc_b <- df_correlacion_mc[,c(1,2,6,9,16:38)]
 
 
 df_correlacion_mc_c <- df_correlacion_mc[,c(16:38)]
-df_correlacion_mc_d <- df_correlacion_mc_c[complete.cases(df_correlacion_mc_d),]
+df_correlacion_mc_d <- df_correlacion_mc_c[complete.cases(df_correlacion_mc_c),]
 
 df_correlacion_mc_d <- df_correlacion_mc_c[,c(1, 2, 3, 6:15)]
 
@@ -175,13 +175,13 @@ ac_mapa_mc@data = data.frame(ac_mapa_mc@data, df_ac[match(ac_mapa_mc@data[,"CVE_
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
 
 # CREAR ARCHIVOS TIPO RData PARA ALMACENAR LOS RESULTADOS DEL PROCESAMIENTO DE LOS DATOS
-setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/data/raw_data")
+setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/data/Rdata/")
 
 save(ac_mapa, ac_mapa_mc, serie_3, serie_6, file = "carto.RData")
 save(df_ac, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado_ac, comparado_esp, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")
-save(df_correlacion_mc, df_correlacion_mc_b, df_correlacion_mc_c, df_correlacion_pearson, file = "correlaciones.RData")
+save(df_correlacion_mc, df_correlacion_mc_b, df_correlacion_mc_c, df_correlacion_mc_d, df_correlacion_pearson, file = "correlaciones.RData")
 save(autocorr_1, file = "autocorrelaciones.RData")
 
 # REGRESAR AL ENTORNO GENERAL LOCAL

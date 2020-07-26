@@ -82,15 +82,15 @@ function(input, output, session) {
   # VISUALIZAR CORRELACIONES
   # Combine the selected variables into a new data frame
   selectedData1 <<- reactive({
-    df_correlacion_mc_c[, c(input$xcol)]
+    df_correlacion_mc_d[, c(input$xcol)]
   })
   
   selectedData2 <<- reactive({
-    df_correlacion_mc_c[, c(input$ycol)]
+    df_correlacion_mc_d[, c(input$ycol)]
   })
   
   selectedData3 <<- reactive({
-    df_correlacion_mc_c[, c(input$tamano)]
+    df_correlacion_mc_d[, c(input$tamano)]
   })
   
   
@@ -99,13 +99,15 @@ function(input, output, session) {
   })
   
   output$plot1 <- renderPlot({
+    data <- df_correlacion_mc_d
     ggplot(data, aes(x=selectedData1(), y=selectedData2(), size = selectedData3())) +
-      geom_point(alpha=0.7)
+      geom_point(alpha=0.7) +
+      geom_smooth(method='lm')
   })
   
   # GENERAR GRÁFICAS
   output$grafica1 <- renderPlot({
-    scatterplot(df_correlacion_mc_c$PCT_AGRICOLA, df_correlacion_mc$DEFORESTADA)
+    scatterplot(df_correlacion_mc_d$PCT_AGRICOLA, df_correlacion_mc_d$DEFORESTADA)
   })
   
   # GENERAR MAPA
@@ -143,7 +145,7 @@ function(input, output, session) {
 
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = 0.8,
-                            fillColor = ~pal_3(PCT_AGRICOLA),
+                            fillColor = ~pal_3(PCT_AGRICOLA.x),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -210,7 +212,7 @@ function(input, output, session) {
     
     m <- m %>%addLegend("bottomleft", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
       addLegend("bottomleft", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
-      addLegend("bottomleft", pal = pal_3, values = ~PCT_AGRICOLA, opacity = 1.0) %>%
+      addLegend("bottomleft", pal = pal_3, values = ~PCT_AGRICOLA.x, opacity = 1.0) %>%
       addLegend("bottomleft", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0)
     
     # Layers control

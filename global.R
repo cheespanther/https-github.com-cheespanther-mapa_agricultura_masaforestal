@@ -26,6 +26,8 @@ load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masafor
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/autocorrelaciones.RData"))
 
 ac_mapa@data = data.frame(ac_mapa@data, df_ac[match(ac_mapa@data[,"CVE_CONCAT"], df_ac[,"CVE_CONCAT"]),])
+ac_mapa_mc = subset(ac_mapa, ac_mapa@data$NOM_MUN == "MARQUÉS DE COMILLAS")
+
 
 bins_terrenos_tot <- c(0, 10, 20, 50, 100, 150, 200, Inf)
 bins_series <- c(1, 2, 3, 4, 5, 6, 7)
@@ -45,4 +47,4 @@ pal_6 <- colorBin( palette="Spectral", domain = as.numeric(as.character(serie_6@
 # k-means only works with numerical variables,
 # so don't give the user the option to select
 # a categorical variable
-vars <- colnames(df_correlacion_mc_c)
+vars <- colnames(df_correlacion_mc_d)
