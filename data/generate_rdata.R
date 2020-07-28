@@ -31,6 +31,9 @@ autocorr_1 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_a
 
 serie_3 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_3.geojson",  what = "sp")
 serie_6 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_6.geojson",  what = "sp")
+cambios_ndvi <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_ndvi.geojson",  what = "sp")
+cambios_usv <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv.geojson",  what = "sp")
+
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN PECUARIAS DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
@@ -181,6 +184,7 @@ save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado_ac, comparado_esp, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")
 save(df_correlacion_mc, df_correlacion_mc_b, df_correlacion_mc_c, df_correlacion_mc_d, df_correlacion_pearson, file = "correlaciones.RData")
 save(autocorr_1, file = "autocorrelaciones.RData")
+save(cambios_ndvi, cambios_usv, file = "cambios.RData")
 
 # REGRESAR AL ENTORNO GENERAL LOCAL
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal")

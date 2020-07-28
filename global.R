@@ -25,6 +25,7 @@ load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masafor
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/correlaciones.RData"))
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/datos.RData"))
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/autocorrelaciones.RData"))
+load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/cambios.RData"))
 
 ac_mapa@data = data.frame(ac_mapa@data, df_ac[match(ac_mapa@data[,"CVE_CONCAT"], df_ac[,"CVE_CONCAT"]),])
 ac_mapa_mc = subset(ac_mapa, ac_mapa@data$NOM_MUN == "MARQUÉS DE COMILLAS")

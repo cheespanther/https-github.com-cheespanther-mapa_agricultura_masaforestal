@@ -223,10 +223,17 @@ function(input, output, session) {
                             fillColor = ~pal_6(as.numeric(VALOR)),
                             group = "Serie 6")
     
+    m <- m %>%  addPolygons(data = cambios_ndvi, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                            fillColor = ~pal_6(as.numeric(tipo_camb)),
+                            group = "Cambios NDVI")
+    
+    m <- m %>%  addPolygons(data = cambios_usv, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                            fillColor = ~pal_6(as.numeric(camb_tip)),
+                            group = "Cambios USV")
     # Layers control
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
-      overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales", "Autocorr 1", "Serie 3", "Serie 6"),
+      overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales", "Autocorr 1", "Serie 3", "Serie 6", "Cambios NDVI", "Cambios USV"),
       options = layersControlOptions(collapsed = TRUE)
     )
     
