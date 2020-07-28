@@ -78,7 +78,6 @@ function(input, output, session) {
     DT::datatable(df_correlacion_mc_b, options = list(paging = FALSE))
   )
   
-  
   # VISUALIZAR CORRELACIONES
   # Combine the selected variables into a new data frame
   selectedData1 <<- reactive({
@@ -120,11 +119,26 @@ function(input, output, session) {
     
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
                             fillColor = ~pal_1(as.numeric(TERRENOS)),
-                            group = "Terrenos totales")
+                            opacity = .3,
+                            weight = 1,
+                            color = "#4D4D4D",
+                            dashArray = "2",
+                            highlight = highlightOptions(
+                              weight = 1,
+                              color = "#4D4D4D",
+                              fillOpacity = 0.1,
+                              dashArray = "2",
+                              bringToFront = TRUE),
+                            group = "Terrenos totales",
+                            labelOptions = labelOptions(
+                              style = list("font-weight" = "normal", padding = "3px 8px"),
+                              textsize = "15px",
+                              direction = "auto"),
+                            popup = ~pct_productividad)
 
     # AGREGAR CAPA DE DATOS DE PRODUCCIÓN
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
-                            fillOpacity = 0.5,
+                            fillOpacity = .5,
                             fillColor = ~pal_2(PCT_FORESTAL),
                             opacity = .3,
                             weight = 1,
@@ -137,14 +151,13 @@ function(input, output, session) {
                               dashArray = "2",
                               bringToFront = TRUE),
                             group = "Actividad forestal",
-                           # popup = popupGraph(PCT_FORESTAL),
                             labelOptions = labelOptions(
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"))
 
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
-                            fillOpacity = 0.8,
+                            fillOpacity = .5,
                             fillColor = ~pal_3(PCT_AGRICOLA.x),
                             opacity = .3,
                             weight = 1,
@@ -163,7 +176,7 @@ function(input, output, session) {
                               direction = "auto"))
 
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
-                            fillOpacity = 0.8,
+                            fillOpacity = .5,
                             fillColor = ~pal_4(PCT_PECUARIO),
                             opacity = .3,
                             weight = 1,
@@ -183,7 +196,7 @@ function(input, output, session) {
     
     # AGREGAR CAPA DE DATOS DE AUTOCORRELACIÓN
     m <- m %>%  addPolygons(data = autocorr_1, stroke = TRUE, smoothFactor = 0.3, 
-                            fillOpacity = 0.8,
+                            fillOpacity = .5,
                             fillColor = ~pal_0(ha_1),
                             opacity = .3,
                             weight = 1,
@@ -210,11 +223,6 @@ function(input, output, session) {
                             fillColor = ~pal_6(as.numeric(VALOR)),
                             group = "Serie 6")
     
-    m <- m %>%addLegend("bottomleft", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
-      addLegend("bottomleft", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
-      addLegend("bottomleft", pal = pal_3, values = ~PCT_AGRICOLA.x, opacity = 1.0) %>%
-      addLegend("bottomleft", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0)
-    
     # Layers control
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
@@ -225,5 +233,24 @@ function(input, output, session) {
     m
     
   })     
+  
+
+  # Incremental changes to the map (in this case, replacing the
+  # circles when a new color is chosen) should be performed in
+  # an observer. Each independent set of things that can change
+  # should be managed in its own observer.
+  
+  # LEYENDA EN PROXY QUE PERMITE ENCENDER Y APAGAR EN SHINY
+  observe({
+    proxy <- leafletProxy("mapa", data = ac_mapa_mc)
+    proxy %>% clearControls()
+    if (input$leyenda) {
+      proxy %>% 
+        addLegend("topleft", group = "Terrenos totales", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
+        addLegend("topleft", group = "Actividad forestal", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
+        addLegend("topleft", group = "Actividad agricola", pal = pal_3, values = ~PCT_AGRICOLA.x, opacity = 1.0) %>%
+        addLegend("topleft", group = "Actividad pecuaria", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0)
+    }
+  })
   
 }

@@ -17,8 +17,6 @@ library(geojsonio)
 library(rmapshaper)
 library(plotly)
 
-
-
 # LECTURA DE SHAPE BASE DE ÁREAS DE CONTROL DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
 ac_mapa <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/ac_mapa.geojson",  what = "sp")
@@ -27,7 +25,7 @@ ac_mapa@data$NOM_ENT <- toupper(ac_mapa@data$NOM_ENT) # CONVERTIR TODOS LOS ENCA
 ac_mapa@data$NOM_MUN <- toupper(ac_mapa@data$NOM_MUN) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CVE_AGEB, ac_mapa@data$CVE_MZA, sep="_"))
 ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
-ac_mapa_mc <- subset(ac_mapa, ac_mapa@data$NOM_MUN=="Marqués de Comillas")
+ac_mapa_mc <- subset(ac_mapa, ac_mapa@data$NOM_MUN=="MARQUÉS DE COMILLAS")
 
 autocorr_1 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr_1.geojson",  what = "sp")
 
@@ -156,11 +154,8 @@ df_correlacion_mc <- merge(df_correlacion_mc, comparado_sum_ac, by.x = "CVE_CONC
 df_correlacion_mc <- df_correlacion_mc[,c(1:15, 17:31, 36:38, 40, 42, 47, 49, 50)]
   
 df_correlacion_mc_b <- df_correlacion_mc[,c(1,2,6,9,16:38)]
-
-
 df_correlacion_mc_c <- df_correlacion_mc[,c(16:38)]
 df_correlacion_mc_d <- df_correlacion_mc_c[complete.cases(df_correlacion_mc_c),]
-
 df_correlacion_mc_d <- df_correlacion_mc_c[,c(1, 2, 3, 6:15)]
 
 # colnames(df_correlacion_mc_b) <- c("Tamaño terreno promedio", "Porcentaje Terrenos Forestales", "Porcentaje Terrenos Pecuarios", "Porcentaje Terrenos Agricolas", "Porcentaje Terrenos Ocupados", "Héctareas Productivas", "Héctareas Conservadas", "Héctareas Deforestadas", "Héctareas Degradadas", "Héctareas Reforestadas", "Héctareas Sin Cambio", "Héctareas de Transición", "Héctareas Urbanizadas", "Total General", "Porcentaje Degradado", "Superficie total est", "Superficie Total Cartográfica 07", "Superficie Sembrada 07", "Superficie Total Cartográfica 16", "Superficie Sembrada 16","Cambio Agrícola en Héctareas", "Cambio Agrícola Relativo")
@@ -169,8 +164,11 @@ df_correlacion_pearson <- cor(df_correlacion_mc_d, method = "pearson")
 
 # UNIR DATOS ANALÍTICOS CON DATOS GEOESPACIALES
 
+ac_sum_mc <- ddply(ac_mapa_mc@data, .(CVE_CONCAT), numcolwise(sum))
+
+
 ac_mapa@data = data.frame(ac_mapa@data, df_ac[match(ac_mapa@data[,"CVE_CONCAT"], df_ac[,"CVE_CONCAT"]),])
-ac_mapa_mc@data = data.frame(ac_mapa_mc@data, df_ac[match(ac_mapa_mc@data[,"CVE_CONCAT"], df_ac[,"CVE_CONCAT"]),])
+ac_mapa_mc@data = data.frame(ac_mapa_mc@data, df_correlacion_mc_b[match(ac_mapa_mc@data[,"CVE_CONCAT"], df_correlacion_mc_b[,"CVE_CONCAT"]),])
 
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
 
@@ -186,3 +184,28 @@ save(autocorr_1, file = "autocorrelaciones.RData")
 
 # REGRESAR AL ENTORNO GENERAL LOCAL
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal")
+
+# AUTOCORRELACIÓN
+library(spdep)
+contiguidad <- poly2nb(ac_mapa_mc, queen=TRUE)
+pesos <- nb2listw(contiguidad, style="W", zero.policy=TRUE)
+
+inc.lag <- lag.listw(pesos, ac_mapa_mc$DEFORESTADA)
+plot(inc.lag ~ ac_mapa_mc$DEFORESTADA, pch=16, asp=1)
+M1 <- lm(inc.lag ~ ac_mapa_mc$DEFORESTADA)
+abline(M1, col="blue")
+
+I <- moran(ac_mapa_mc$DEFORESTADA, pesos, length(contiguidad), Szero(pesos))[1]
+
+grid <- raster(extent(ac_mapa_mc), resolution = c(200,200))
+grid <- raster::extend(grid, c(1,1))
+
+# convert to SpatialPolygonsDataFrame
+class(gridPolygon)
+
+gridPolygon <- rasterToPolygons(grid)
+plot(ac_mapa_mc)
+plot(gridPolygon, add = T)
+
+grid <- makegrid(ac_mapa_mc, cellsize = 0.1)
+grid <- SpatialPoints(grid)
