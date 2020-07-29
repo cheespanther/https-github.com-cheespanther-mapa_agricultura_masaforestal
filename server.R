@@ -1,8 +1,8 @@
 function(input, output, session) {
   
   # GENERAR TABLAS PARA VISUALIZAR DATOS
-  
   # VISUALIZACIÓN DE DATOS 1
+  
   output$tabla1 = DT::renderDataTable({
     data <- concentrado07
     DT::datatable(
@@ -113,6 +113,8 @@ function(input, output, session) {
   output$mapa <- renderLeaflet({
     
     m <-leaflet(ac_mapa_mc) %>%
+      addMapPane("correlacion_1", zIndex = 430) %>% # shown below ames_circles
+      addMapPane("cambios_ndvi", zIndex = 420) %>% # shown above ames_lines
       addTiles(group = "OSM (default)") %>%
       addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
       addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite")
@@ -173,7 +175,8 @@ function(input, output, session) {
                             labelOptions = labelOptions(
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
-                              direction = "auto"))
+                              direction = "auto"),
+                            popup = ~pop_agricola)
 
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
                             fillOpacity = .5,
@@ -215,33 +218,25 @@ function(input, output, session) {
                               direction = "auto"),
                             label = ~paste0(Id, ": ", formatC(ha_1), big.mark = ","))
     
-    m <- m %>%  addPolygons(data = serie_3, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            fillColor = ~pal_5(as.numeric(VALOR)),
-                            group = "Serie 3")
-    
-    m <- m %>%  addPolygons(data = serie_6, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            fillColor = ~pal_6(as.numeric(VALOR)),
-                            group = "Serie 6")
-    
     m <- m %>%  addPolygons(data = cambios_ndvi, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            fillColor = ~pal_6(as.numeric(tipo_camb)),
+                            fillColor = ~pal_7(as.numeric(gridcode)),
                             group = "Cambios NDVI")
     
     m <- m %>%  addPolygons(data = cambios_usv, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            fillColor = ~pal_6(as.numeric(camb_tip)),
+                            fillColor = ~pal_8(as.numeric(gridcode)),
                             group = "Cambios USV")
+    
     # Layers control
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
-      overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales", "Autocorr 1", "Serie 3", "Serie 6", "Cambios NDVI", "Cambios USV"),
+      overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales", "Autocorr 1", "Cambios NDVI", "Cambios USV"),
       options = layersControlOptions(collapsed = TRUE)
     )
     
     m
     
-  })     
+  })
   
-
   # Incremental changes to the map (in this case, replacing the
   # circles when a new color is chosen) should be performed in
   # an observer. Each independent set of things that can change
@@ -257,6 +252,7 @@ function(input, output, session) {
         addLegend("topleft", group = "Actividad forestal", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad agricola", pal = pal_3, values = ~PCT_AGRICOLA.x, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad pecuaria", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0)
+      
     }
   })
   

@@ -13,9 +13,7 @@ bootstrapPage(theme = shinytheme("flatly"),
                  }"),
                   leafletOutput("mapa", width = "100%", height = 800),
                   absolutePanel(top = 10, right = 10,
-                                checkboxInput("leyenda", "Mostrar leyenda", TRUE),
-                                plot(serie_3$VALOR, serie_3$vslor_bin)
-                  )
+                                checkboxInput("leyenda", "Mostrar leyenda", TRUE)                  )
       )
       ),
       navbarMenu("Proyecto",
