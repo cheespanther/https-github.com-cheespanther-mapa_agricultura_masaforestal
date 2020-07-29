@@ -13,7 +13,9 @@ bootstrapPage(theme = shinytheme("flatly"),
                  }"),
                   leafletOutput("mapa", width = "100%", height = 800),
                   absolutePanel(top = 10, right = 10,
-                                checkboxInput("leyenda", "Mostrar leyenda", TRUE)                  )
+                                checkboxInput("leyenda", "Mostrar leyenda", TRUE),
+                  absolutePanel(id = "logo", class = "card", bottom = 20, left = 60, width = 80, fixed=TRUE, draggable = FALSE, height = "auto",
+                                              tags$a(href='https://www.centrogeo.edu.mx', tags$img(src='logo_centrogeo_solo.png',height='40',width='80'))),)
       )
       ),
       navbarMenu("Proyecto",
@@ -122,14 +124,11 @@ bootstrapPage(theme = shinytheme("flatly"),
                  )        
                  ),
       
-      navbarMenu("Acerca de",
-                 tabPanel("Acerca de este sitio",
+      tabPanel("Acerca de",
+                 "Acerca de este sitio",
                           includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/acerca_de.html")
-                 ),
-      
-      
+                 )
     )
-      
-    )
+)
 
  
