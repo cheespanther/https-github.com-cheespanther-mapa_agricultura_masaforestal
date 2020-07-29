@@ -12,23 +12,26 @@ bootstrapPage(theme = shinytheme("flatly"),
                 height: 10px;
                  }"),
                   leafletOutput("mapa", width = "100%", height = 800),
+                
+                  absolutePanel(id = "controls", class = "panel panel-default",
+                                top = 75, left = 55, width = 250, fixed=TRUE,
+                                draggable = TRUE, height = "auto",
+                                span(tags$i(h6("Arrastra este recuadro para visualizar la gráfica y el mapa simultáneamente.")), style="color:#045a8d"),
+                                selectInput('xcol', 'Variable X', vars),
+                                selectInput('ycol', 'Variable Y', vars, selected = vars[[2]]),
+                                selectInput('tamano', 'Tamaño', vars, selected = vars[[3]]),
+                                plotOutput("plot1", height="130px", width="100%"),
+                                
+                  ),                
+                
                   absolutePanel(top = 10, right = 10,
                                 checkboxInput("leyenda", "Mostrar leyenda", TRUE),
-                  absolutePanel(id = "logo", class = "card", bottom = 20, left = 60, width = 80, fixed=TRUE, draggable = FALSE, height = "auto",
-                                              tags$a(href='https://www.centrogeo.edu.mx', tags$img(src='logo_centrogeo_solo.png',height='40',width='80'))),)
+                  absolutePanel(id = "logo_tia_cony", class = "card", bottom = 20, left = 60, width = "100%", fixed=TRUE, draggable = FALSE, height = "auto",
+                                tags$a(href='https://www.conacyt.gob.mx', tags$img(src='https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/logo_conacyt_solo.png',height='40',width='40'))),
+                  absolutePanel(id = "logo_geo", class = "card", bottom = 20, left = 120, width = "100%", fixed=TRUE, draggable = FALSE, height = "auto",
+                                tags$a(href='https://www.centrogeo.org.mx', tags$img(src='https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/logo_centrogeo_solo.png',height='40',width='40'))),
+                  )
       )
-      ),
-      navbarMenu("Proyecto",
-                 tabPanel("Resumen",
-                          includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/resumen.html")
-                 ),
-                 tabPanel("Introducción",
-                          includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/introduccion.html")
-                 ),
-                 tabPanel("Justificación",
-                          h4("Justificación:"),
-                          includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/justificacion.html"),
-                          plotOutput('grafica1'),)
       ),
       
       navbarMenu("Datos",
@@ -108,27 +111,24 @@ bootstrapPage(theme = shinytheme("flatly"),
 
       ),
       
-      navbarMenu("Gráficas",
-                 tabPanel("Correlaciones",
-                          pageWithSidebar(
-                            headerPanel('Gráfica de las variables'),
-                            sidebarPanel(
-                              selectInput('xcol', 'Variable X', vars),
-                              selectInput('ycol', 'Variable Y', vars, selected = vars[[2]]),
-                              selectInput('tamano', 'Tamaño', vars, selected = vars[[3]])
-                            ),
-                            mainPanel(
-                              plotOutput('plot1')
-                            )
-                          )
-                 )        
-                 ),
-      
-      tabPanel("Acerca de",
-                 "Acerca de este sitio",
-                          includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/acerca_de.html")
-                 )
+
+    navbarMenu("Proyecto",
+               tabPanel("Resumen",
+                        includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/resumen.html")
+               ),
+               tabPanel("Introducción",
+                        includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/introduccion.html")
+               ),
+               tabPanel("Justificación",
+                        h4("Justificación:"),
+                        includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/justificacion.html"),
+                        plotOutput('grafica1'),),
+               tabPanel("Acerca de este sitio",
+                        includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/acerca_de.html"))
     )
+    
+    )
+    
 )
 
  
