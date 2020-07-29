@@ -101,8 +101,12 @@ bootstrapPage(theme = shinytheme("flatly"),
                  tabPanel("Datos para correlaciones",
                           h2("Datos para correlacoines"),
                           DT::dataTableOutput("tabla4"),
-                 ),
+                 )
                  
+
+      ),
+      
+      navbarMenu("Gráficas",
                  tabPanel("Correlaciones",
                           pageWithSidebar(
                             headerPanel('Gráfica de las variables'),
@@ -115,8 +119,14 @@ bootstrapPage(theme = shinytheme("flatly"),
                               plotOutput('plot1')
                             )
                           )
-                 )  
-      )
+                 )        
+                 ),
+      
+      navbarMenu("Acerca de",
+                 tabPanel("Acerca de este sitio",
+                          includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/acerca_de.html")
+                 ),
+      
       
     )
       

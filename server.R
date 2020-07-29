@@ -251,7 +251,8 @@ function(input, output, session) {
         addLegend("topleft", group = "Terrenos totales", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad forestal", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad agricola", pal = pal_3, values = ~PCT_AGRICOLA.x, opacity = 1.0) %>%
-        addLegend("topleft", group = "Actividad pecuaria", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0)
+        addLegend("topleft", group = "Actividad pecuaria", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0) 
+
       
     }
   })
