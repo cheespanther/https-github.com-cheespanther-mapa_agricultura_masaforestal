@@ -60,11 +60,11 @@ function(input, output, session) {
         buttons = c('csv')
       ),
       {
-        if (input$CVE_MUN_07 != "Todos") {
-          data <- data[data$CVE_MUN_07 == input$CVE_MUN_07,]
+        if (input$CVE_CONCAT != "Todos") {
+          data <- data[data$CVE_CONCAT == input$CVE_CONCAT,]
         }
-        if (input$CVE_CONCAT_07 != "Todos") {
-          data <- data[data$CVE_CONCAT_07 == input$CVE_CONCAT_07,]
+        if (input$CVE_CONCAT != "Todos") {
+          data <- data[data$CVE_CONCAT == input$CVE_CONCAT,]
         }
         data
       }
@@ -106,7 +106,7 @@ function(input, output, session) {
   
   # GENERAR GRÁFICAS
   output$grafica1 <- renderPlot({
-    scatterplot(df_correlacion_mc_d$PCT_AGRICOLA, df_correlacion_mc_d$DEFORESTADA)
+    scatterplot(df_correlacion_mc_d$`TONELADAS POR HA 2007`, df_correlacion_mc_d$`TONELADAS PRODUCIDAS 2007`)
   })
   
   # GENERAR MAPA
@@ -120,7 +120,7 @@ function(input, output, session) {
       addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite")
     
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            fillColor = ~pal_1(as.numeric(TERRENOS)),
+                            fillColor = ~pal_1(as.numeric(TERRENOS.x)),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -248,12 +248,10 @@ function(input, output, session) {
     proxy %>% clearControls()
     if (input$leyenda) {
       proxy %>% 
-        addLegend("topleft", group = "Terrenos totales", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
+        addLegend("topleft", group = "Terrenos totales", pal = pal_1, values = ~TERRENOS.x, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad forestal", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad agricola", pal = pal_3, values = ~PCT_AGRICOLA, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad pecuaria", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0) 
-
-      
     }
   })
   

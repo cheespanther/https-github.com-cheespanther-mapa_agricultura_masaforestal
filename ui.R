@@ -91,13 +91,13 @@ bootstrapPage(theme = shinytheme("flatly"),
                                    selectInput("CVE_MUN_07",
                                                "Municipio:",
                                                c("Todos",
-                                                 unique(as.character(comparado_sum_ac$CVE_MUN_07))))
+                                                 unique(as.character(comparado_sum_ac$CVE_CONCAT))))
                             ),
                             column(4,
                                    selectInput("CVE_CONCAT_07",
                                                "Clave concatenado/Área de Control:",
                                                c("Todos",
-                                                 unique(as.character(comparado_sum_ac$CVE_CONCAT_07))))
+                                                 unique(as.character(comparado_sum_ac$CVE_CONCAT))))
                             )
                           ),
                           DT::dataTableOutput("tabla3"),
@@ -111,7 +111,6 @@ bootstrapPage(theme = shinytheme("flatly"),
 
       ),
       
-
     navbarMenu("Proyecto",
                tabPanel("Resumen",
                         includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/resumen.html")

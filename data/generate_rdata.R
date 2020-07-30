@@ -16,7 +16,6 @@ ac_mapa@data$NOM_MUN <- toupper(ac_mapa@data$NOM_MUN) # CONVERTIR TODOS LOS NOMB
 ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CVE_AGEB, ac_mapa@data$CVE_MZA, sep="_"))
 
 ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
-ac_mapa_mc <- subset(ac_mapa, ac_mapa@data$NOM_MUN=="MARQUÉS DE COMILLAS")
 
 autocorr_1 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr_1.geojson",  what = "sp")
 serie_3 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_3.geojson",  what = "sp")
@@ -142,18 +141,20 @@ ac_mapa_b <- merge(ac_mapa@data, comparado_sum_ac, by = "CVE_CONCAT", all.y=TRUE
 ########### CONTROL
 # CORRELACIÓN DE DATOS
 df_correlacion_mc <- merge(ac_mapa_b, datos_cambios, by.x = "CONTROL" , by.y = "ETIQUETAS DE FILA")
+df_correlacion_mc <- merge(df_correlacion_mc, df_ac[,c(2, 22:26)], by = "CONTROL")
 df_correlacion_mc[is.na(df_correlacion_mc)] <- 0
 
-df_correlacion_mc_b <- df_correlacion_mc[,c(1,2,6,9,16:38)]
-df_correlacion_mc_c <- df_correlacion_mc[,c(16:38)]
-df_correlacion_mc_d <- df_correlacion_mc_c[complete.cases(df_correlacion_mc_c),]
-df_correlacion_mc_d <- df_correlacion_mc_c[,c(1, 2, 3, 6:15)]
+df_correlacion_mc_b <- df_correlacion_mc[,c(1,9:50)]
+df_correlacion_mc_c <- df_correlacion_mc_b[complete.cases(df_correlacion_mc_b),]
+df_correlacion_mc_d <- df_correlacion_mc_c[,c(2:43)]
 
 df_correlacion_pearson <- cor(df_correlacion_mc_d, method = "pearson")
 
 # UNIR DATOS ANALÍTICOS CON DATOS GEOESPACIALES
+ac_mapa_mc <- subset(ac_mapa, ac_mapa@data$NOM_MUN=="MARQUÉS DE COMILLAS")
 
 ac_mapa_mc <- merge(ac_mapa_mc, df_correlacion_mc, by = "CONTROL")
+ac_mapa_mc <- merge(ac_mapa_mc, df_ac[,c(2, 22:26)], by = "CONTROL")
 
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
 
