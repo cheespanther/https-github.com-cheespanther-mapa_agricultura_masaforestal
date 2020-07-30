@@ -1,5 +1,9 @@
 # CARGAR LIBRERIAS UTILIZADAS DE R
-
+library(RColorBrewer)
+library(leaflet)
+library(shiny)
+library(shinythemes)
+library(ggplot2)
 
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/carto.RData"))
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/concentrados.RData"))
@@ -8,10 +12,6 @@ load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masafor
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/datos.RData"))
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/autocorrelaciones.RData"))
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/cambios.RData"))
-
-ac_mapa@data = data.frame(ac_mapa@data, df_ac[match(ac_mapa@data[,"CVE_CONCAT"], df_ac[,"CVE_CONCAT"]),])
-ac_mapa_mc = subset(ac_mapa, ac_mapa@data$NOM_MUN == "MARQUÉS DE COMILLAS")
-
 
 bins_terrenos_tot <- c(0, 10, 20, 50, 100, 150, 200, Inf)
 bins_series <- c(1, 2, 3, 4, 5, 6, 7)
@@ -22,7 +22,6 @@ bins_autocorr <- c(0, 10, 20, 50, 100)
 # PALETA DE COLORES
 
 pal <- colorNumeric("viridis", NULL)
-
 
 pal_0 <- colorBin( palette="magma", domain = as.numeric(as.character(autocorr_1@data$ha_1)), bins = bins_autocorr)
 pal_1 <- colorBin( palette="viridis", domain = as.numeric(as.character(ac_mapa@data$TERRENOS)), bins = bins_terrenos_tot)
@@ -44,15 +43,13 @@ vars <- colnames(df_correlacion_mc_d)
 pct_productividad <- paste0("<b><br/> Área de control:</b>", ac_mapa_mc$CONTROL,
                             "</strong><br/> Terrenos totales: ", ac_mapa_mc$TERRENOS,
                             ">/strong><br/> Superficie total: ", ac_mapa_mc$SUP_TOTAL, " ha",
-                            "</strong><br/> Tamaño promedio de terreno: ", as.character(round(ac_mapa_mc$TERRENO_PROM_SEM_16.x.1, 3)), " ha",
-                            "</strong><br/> Terrenos agrícolas: ", as.character(100*round(ac_mapa_mc$PCT_AGRICOLA.x.1, 3)), "%",
-                            "</strong><br/> Terrenos pecuarios: ", as.character(100*round(ac_mapa_mc$PCT_PECUARIO.1, 3)), "%",
-                            "</strong><br/> Terrenos forestales: ", as.character(100*round(ac_mapa_mc$PCT_FORESTAL.1, 3)), "%")
+                            "</strong><br/> Tamaño promedio de terreno: ", as.character(round(as.numeric(ac_mapa_mc$TERRENO_PROM_SEM_16), 3)), " ha",
+                            "</strong><br/> Terrenos agrícolas: ", as.character(100*round(as.numeric(ac_mapa_mc$PCT_AGRICOLA), 3)), "%",
+                            "</strong><br/> Terrenos pecuarios: ", as.character(100*round(as.numeric(ac_mapa_mc$PCT_PECUARIO), 3)), "%",
+                            "</strong><br/> Terrenos forestales: ", as.character(100*round(as.numeric(ac_mapa_mc$PCT_FORESTAL), 3)), "%")
 
-pop_agricola <- paste0("</strong><br/> Terrenos agrícolas: ", as.character(100*round(ac_mapa_mc$PCT_AGRICOLA.x.1, 3)), "%",
-                       "</strong><br/> Terrenos agrícolas: ", as.character(100*round(ac_mapa_mc$TERRENOS_16.x.1, 3)), "%",
-                       "</strong><br/> Terrenos agrícolas: ", as.character(100*round(ac_mapa_mc$SUP_SEMB_16.x.1, 3)), "%")
-
-
+pop_agricola <- paste0("</strong><br/> Terrenos agrícolas: ", as.character(100*round(as.numeric(ac_mapa_mc$TERRENOS.1), 3)), "%",
+                       "</strong><br/> Tamaño promedio terreno sembrado: ", as.character(100*round(as.numeric(ac_mapa_mc$TERRENO_PROM_SEM_16), 3)), "%",
+                       "</strong><br/> Tamaño promedio terreno: ", as.character(100*round(as.numeric(ac_mapa_mc$TERRENO_PROM_TOT_16), 3)), "%")
 
 

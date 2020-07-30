@@ -132,7 +132,7 @@ casos_comparables_ac_b <- casos_comparables_ac[,c(1, 41:49, 30:40, 54:64)]
 
 # UN "CASO COMPARABLE" ES AQUEL SIN CELDAS VACÍAS
 comparado_sum_ac <- ddply(casos_comparables_ac_b, .(CVE_CONCAT_07), numcolwise(sum))
-colnames(comparado_sum_ac) <- c("CVE_CONCAT", "UNIDADES DE PRODUCCIÓN", "SUPERFICE CARTO 07", "SUPERFICIE SEMBRADA 07", "SUPERFICIE COSECHADA 07", "TONELADAS PRODUCIDAS 2007", "TONELADAS POR HA 2007", "SUPERFICIE SEMBRADA % 2007", "SHAPE_LENG_07", "SHAPE_AREA_07", "TERRENO PROMEDIO GENERAL 07", "TERRENO PROMEDIO SEMBRADO 07", "UNIDADES DE PRODUCCION PROMEDIO SEMBRADA", "TERRENOS TOTALES EN LA AC", "SUPERFICIE TOTAL 2016", "TERRENOS SEMBRADOS 2016", "SUPERFICIE CARTO 2016", "SUPERFICIE SEMBRADA 2016", "SHAPE_LENG_16", "SHAPE_AREA_16", "TERRENO PROMEDIO GENERAL 2016", "TERRENO PROMEDIO SEMBRADO 2016", "SUPERFICIE SEMBRADA % 2016" )
+colnames(comparado_sum_ac) <- c("CVE_CONCAT", "SUPERFICIE TOTAL", "SUPERFICIE CARTO 07", "UNIDADES DE PRODUCCIÓN 07", "SUPERFICIE SEMBRADA 07", "SUPERFICIE COSECHADA 07", "TONELADAS PRODUCIDAS 2007", "TONELADAS POR HA 2007", "SUPERFICIE SEMBRADA % 2007", "SHAPE_LENG_07", "SHAPE_AREA_07", "AREA PROMEDIO GENERAL 07 UP", "AREA PROMEDIO SEMBRADO 07 UP", "TERRENOS TOTALES EN LA AC", "SUPERFICIE TOTAL 2016", "TERRENOS SEMBRADOS 2016", "SUPERFICIE CARTO 2016", "SUPERFICIE SEMBRADA 2016", "SHAPE_LENG_16", "SHAPE_AREA_16", "TERRENO PROMEDIO GENERAL 2016", "TERRENO PROMEDIO SEMBRADO 2016", "SUPERFICIE SEMBRADA % 2016", "PORCENTAJE TERRENOS AGRÍCOLAS 16")
 comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA <- as.numeric(as.character(comparado_sum_ac$`SUPERFICIE SEMBRADA 2016`)) - as.numeric(as.character(comparado_sum_ac$`SUPERFICIE SEMBRADA 07`))
 comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA_REL <- comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA / comparado_sum_ac$`SUPERFICIE SEMBRADA 07`
 
@@ -149,17 +149,11 @@ df_correlacion_mc_c <- df_correlacion_mc[,c(16:38)]
 df_correlacion_mc_d <- df_correlacion_mc_c[complete.cases(df_correlacion_mc_c),]
 df_correlacion_mc_d <- df_correlacion_mc_c[,c(1, 2, 3, 6:15)]
 
-# colnames(df_correlacion_mc_b) <- c("Tamaño terreno promedio", "Porcentaje Terrenos Forestales", "Porcentaje Terrenos Pecuarios", "Porcentaje Terrenos Agricolas", "Porcentaje Terrenos Ocupados", "Héctareas Productivas", "Héctareas Conservadas", "Héctareas Deforestadas", "Héctareas Degradadas", "Héctareas Reforestadas", "Héctareas Sin Cambio", "Héctareas de Transición", "Héctareas Urbanizadas", "Total General", "Porcentaje Degradado", "Superficie total est", "Superficie Total Cartográfica 07", "Superficie Sembrada 07", "Superficie Total Cartográfica 16", "Superficie Sembrada 16","Cambio Agrícola en Héctareas", "Cambio Agrícola Relativo")
-
 df_correlacion_pearson <- cor(df_correlacion_mc_d, method = "pearson")
 
 # UNIR DATOS ANALÍTICOS CON DATOS GEOESPACIALES
 
-ac_sum_mc <- ddply(ac_mapa_mc@data, .(CVE_CONCAT), numcolwise(sum))
-
-
-ac_mapa@data = data.frame(ac_mapa@data, df_ac[match(ac_mapa@data[,"CVE_CONCAT"], df_ac[,"CVE_CONCAT"]),])
-ac_mapa_mc@data = data.frame(ac_mapa_mc@data, df_correlacion_mc_b[match(ac_mapa_mc@data[,"CVE_CONCAT"], df_correlacion_mc_b[,"CVE_CONCAT"]),])
+ac_mapa_mc <- merge(ac_mapa_mc, df_correlacion_mc, by = "CONTROL")
 
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
 
