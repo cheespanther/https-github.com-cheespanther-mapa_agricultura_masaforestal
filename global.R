@@ -1,23 +1,5 @@
 # CARGAR LIBRERIAS UTILIZADAS DE R
-library(curl)
-library(devtools)
-library(shiny)
-library(shinythemes)
-library(shinydashboard)
-library(rio)
-library(DT)
-library(leaflet)
-library(rgdal)
-library(plyr)
-library(dplyr)
-library(sf)
-library(corrplot)
-library(ggplot2)
-library(geojsonio)
-library(leafpop)
-library(raster)
-library(diffeR)
-library(RColorBrewer)
+
 
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/carto.RData"))
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/concentrados.RData"))
@@ -59,7 +41,11 @@ vars <- colnames(df_correlacion_mc_d)
 
 # POP UPS
 
-pct_productividad <- paste0("</strong><br/> Terrenos agrícolas: ", as.character(100*round(ac_mapa_mc$PCT_AGRICOLA.x.1, 3)), "%",
+pct_productividad <- paste0("<b><br/> Área de control:</b>", ac_mapa_mc$CONTROL,
+                            "</strong><br/> Terrenos totales: ", ac_mapa_mc$TERRENOS,
+                            ">/strong><br/> Superficie total: ", ac_mapa_mc$SUP_TOTAL, " ha",
+                            "</strong><br/> Tamaño promedio de terreno: ", as.character(round(ac_mapa_mc$TERRENO_PROM_SEM_16.x.1, 3)), " ha",
+                            "</strong><br/> Terrenos agrícolas: ", as.character(100*round(ac_mapa_mc$PCT_AGRICOLA.x.1, 3)), "%",
                             "</strong><br/> Terrenos pecuarios: ", as.character(100*round(ac_mapa_mc$PCT_PECUARIO.1, 3)), "%",
                             "</strong><br/> Terrenos forestales: ", as.character(100*round(ac_mapa_mc$PCT_FORESTAL.1, 3)), "%")
 

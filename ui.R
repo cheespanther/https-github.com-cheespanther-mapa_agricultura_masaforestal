@@ -14,13 +14,13 @@ bootstrapPage(theme = shinytheme("flatly"),
                   leafletOutput("mapa", width = "100%", height = 800),
                 
                   absolutePanel(id = "controls", class = "panel panel-default",
-                                top = 75, left = 55, width = 250, fixed=TRUE,
+                                top = 75, left = 400, width = 250, fixed=TRUE,
                                 draggable = TRUE, height = "auto",
                                 span(tags$i(h6("Arrastra este recuadro para visualizar la gráfica y el mapa simultáneamente.")), style="color:#045a8d"),
                                 selectInput('xcol', 'Variable X', vars),
                                 selectInput('ycol', 'Variable Y', vars, selected = vars[[2]]),
                                 selectInput('tamano', 'Tamaño', vars, selected = vars[[3]]),
-                                plotOutput("plot1", height="130px", width="100%"),
+                                plotOutput("plot1", height="180px", width="100%"),
                                 
                   ),                
                 
