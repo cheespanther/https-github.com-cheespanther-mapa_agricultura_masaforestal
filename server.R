@@ -52,7 +52,25 @@ function(input, output, session) {
   
   # VISUALIZACIÓN DE DATOS 3
   output$tabla3 = DT::renderDataTable({
-    data <- comparado_sum_ac
+    data <- comparado_sum_esp
+    DT::datatable(
+      extensions = 'Buttons',
+      options = list(
+        dom = 'Bfrtip',
+        buttons = c('csv')
+      ),
+      {
+        if (input$CONCAT_ESPE != "Todos") {
+          data <- data[data$CONCAT_ESPE == input$CONCAT_ESPE,]
+        }
+        data
+      }
+    )
+  })
+  
+  # VISUALIZACIÓN DE DATOS 3
+  output$tabla4 = DT::renderDataTable({
+    data <- df_correlacion_mc
     DT::datatable(
       extensions = 'Buttons',
       options = list(
@@ -63,8 +81,8 @@ function(input, output, session) {
         if (input$CVE_CONCAT != "Todos") {
           data <- data[data$CVE_CONCAT == input$CVE_CONCAT,]
         }
-        if (input$CVE_CONCAT != "Todos") {
-          data <- data[data$CVE_CONCAT == input$CVE_CONCAT,]
+        if (input$NOM_MUN != "Todos") {
+          data <- data[data$NOM_MUN == input$NOM_MUN,]
         }
         data
       }
@@ -74,7 +92,7 @@ function(input, output, session) {
   # VISUALIZACIÓN DE DATOS 3
   
   
-  output$tabla4 <- DT::renderDataTable(
+  output$tabla5 <- DT::renderDataTable(
     DT::datatable(df_correlacion_mc_b, options = list(paging = FALSE))
   )
   
@@ -119,7 +137,8 @@ function(input, output, session) {
       addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
       addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite")
     
-    m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+    m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = FALSE, smoothFactor = 0.3, 
+                            fillOpacity = .7,
                             fillColor = ~pal_1(as.numeric(TERRENOS.x)),
                             opacity = .3,
                             weight = 1,
@@ -136,11 +155,11 @@ function(input, output, session) {
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
                               direction = "auto"),
-                            popup = ~pct_productividad)
+                            popup = ~pop_terrenos)
 
     # AGREGAR CAPA DE DATOS DE PRODUCCIÓN
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
-                            fillOpacity = .5,
+                            fillOpacity = .7,
                             fillColor = ~pal_2(PCT_FORESTAL),
                             opacity = .3,
                             weight = 1,
@@ -156,10 +175,12 @@ function(input, output, session) {
                             labelOptions = labelOptions(
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
-                              direction = "auto"))
+                              direction = "auto"),
+                            popup = ~pop_forestal)
+    
 
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
-                            fillOpacity = .5,
+                            fillOpacity = .7,
                             fillColor = ~pal_3(PCT_AGRICOLA),
                             opacity = .3,
                             weight = 1,
@@ -168,7 +189,7 @@ function(input, output, session) {
                             highlight = highlightOptions(
                               weight = 1,
                               color = "#4D4D4D",
-                              fillOpacity = 0.5,
+                              fillOpacity = 0.1,
                               dashArray = "2",
                               bringToFront = TRUE),
                             group = "Actividad agricola",
@@ -179,7 +200,7 @@ function(input, output, session) {
                             popup = ~pop_agricola)
 
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
-                            fillOpacity = .5,
+                            fillOpacity = .7,
                             fillColor = ~pal_4(PCT_PECUARIO),
                             opacity = .3,
                             weight = 1,
@@ -188,18 +209,20 @@ function(input, output, session) {
                             highlight = highlightOptions(
                               weight = 1,
                               color = "#4D4D4D",
-                              fillOpacity = 0.5,
+                              fillOpacity = 0.1,
                               dashArray = "2",
                               bringToFront = TRUE),
                             group = "Actividad pecuaria",
                             labelOptions = labelOptions(
                               style = list("font-weight" = "normal", padding = "3px 8px"),
                               textsize = "15px",
-                              direction = "auto"))
+                              direction = "auto"),
+                            popup = ~pop_pecuario)
+    
     
     # AGREGAR CAPA DE DATOS DE AUTOCORRELACIÓN
     m <- m %>%  addPolygons(data = autocorr_1, stroke = TRUE, smoothFactor = 0.3, 
-                            fillOpacity = .5,
+                            fillOpacity = .7,
                             fillColor = ~pal_0(ha_1),
                             opacity = .3,
                             weight = 1,
@@ -208,7 +231,7 @@ function(input, output, session) {
                             highlight = highlightOptions(
                               weight = 1,
                               color = "#4D4D4D",
-                              fillOpacity = 0.5,
+                              fillOpacity = 0.1,
                               dashArray = "2",
                               bringToFront = TRUE),
                             group = "Autocorr 1",
@@ -226,11 +249,12 @@ function(input, output, session) {
                             fillColor = ~pal_8(as.numeric(gridcode)),
                             group = "Cambios USV")
     
+    
     # Layers control
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
       overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales", "Autocorr 1", "Cambios NDVI", "Cambios USV"),
-      options = layersControlOptions(collapsed = TRUE)
+      options = layersControlOptions(collapsed = FALSE)
     )
     
     m
@@ -255,4 +279,13 @@ function(input, output, session) {
     }
   })
   
+  observe({
+    proxy <- leafletProxy("mapa", data = cambios_ndvi)
+    proxy %>% clearControls()
+    if (input$leyenda) {
+      proxy %>% 
+        addLegend("topleft", group = "Cambios NDVI", pal = pal_7, values = ~as.numeric(gridcode), opacity = 1.0) %>%
+        addLegend("topleft", group = "Cambios USV", pal = pal_8, values = ~as.numeric(gridcode), opacity = 1.0)
+    }
+  })  
 }

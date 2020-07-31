@@ -20,7 +20,7 @@ bootstrapPage(theme = shinytheme("flatly"),
                                 selectInput('xcol', 'Variable X', vars),
                                 selectInput('ycol', 'Variable Y', vars, selected = vars[[2]]),
                                 selectInput('tamano', 'Tamaño', vars, selected = vars[[3]]),
-                                plotOutput("plot1", height="180px", width="100%"),
+                                plotOutput("plot1", height="240px", width="360px"),
                                 
                   ),                
                 
@@ -84,31 +84,41 @@ bootstrapPage(theme = shinytheme("flatly"),
                           DT::dataTableOutput("tabla2"),
                  ),
                  
-                 tabPanel("Comparación 2007 - 2016",
-                          h2("Comparación por área de control"),
+                 tabPanel("Comparativo por especie 2007 - 2016",
+                          h2("Cambios por especie por área de control"),
                           fluidRow(
                             column(4,
-                                   selectInput("CVE_MUN_07",
-                                               "Municipio:",
+                                   selectInput("CONCAT_ESPE",
+                                               "Clave de área de control:",
                                                c("Todos",
-                                                 unique(as.character(comparado_sum_ac$CVE_CONCAT))))
-                            ),
-                            column(4,
-                                   selectInput("CVE_CONCAT_07",
-                                               "Clave concatenado/Área de Control:",
-                                               c("Todos",
-                                                 unique(as.character(comparado_sum_ac$CVE_CONCAT))))
+                                                 unique(as.character(comparado_sum_ac$CONCAT_ESPE))))
                             )
                           ),
                           DT::dataTableOutput("tabla3"),
                  ),
+                 tabPanel("Marqués de Comillas cambios 2007 - 2016",
+                          h2("Cambios por área de control"),
+                          fluidRow(
+                            column(4,
+                                   selectInput("CVE_CONCAT",
+                                               "Clave de área de control:",
+                                               c("Todos",
+                                                 unique(as.character(df_correlacion_mc$CVE_CONCAT))))
+                            ),
+                            column(4,
+                                   selectInput("NOM_MUN",
+                                               "Municipio:",
+                                               c("Todos",
+                                                 unique(as.character(df_correlacion_mc$NOM_MUN))))
+                            )
+                          ),
+                          DT::dataTableOutput("tabla4"),
+                 ),
                  
                  tabPanel("Datos para correlaciones",
                           h2("Datos para correlacoines"),
-                          DT::dataTableOutput("tabla4"),
+                          DT::dataTableOutput("tabla5"),
                  )
-                 
-
       ),
       
     navbarMenu("Proyecto",

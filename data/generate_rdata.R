@@ -147,14 +147,14 @@ df_correlacion_mc[is.na(df_correlacion_mc)] <- 0
 df_correlacion_mc_b <- df_correlacion_mc[,c(1,9:50)]
 df_correlacion_mc_c <- df_correlacion_mc_b[complete.cases(df_correlacion_mc_b),]
 df_correlacion_mc_d <- df_correlacion_mc_c[,c(2:43)]
+df_correlacion_mc_d$TERRENOS <- as.numeric(df_correlacion_mc_d$TERRENOS)
 
 df_correlacion_pearson <- cor(df_correlacion_mc_d, method = "pearson")
 
 # UNIR DATOS ANALÍTICOS CON DATOS GEOESPACIALES
-ac_mapa_mc <- subset(ac_mapa, ac_mapa@data$NOM_MUN=="MARQUÉS DE COMILLAS")
 
+ac_mapa_mc <- subset(ac_mapa, ac_mapa@data$NOM_MUN=="MARQUÉS DE COMILLAS")
 ac_mapa_mc <- merge(ac_mapa_mc, df_correlacion_mc, by = "CONTROL")
-ac_mapa_mc <- merge(ac_mapa_mc, df_ac[,c(2, 22:26)], by = "CONTROL")
 
 # ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
 
