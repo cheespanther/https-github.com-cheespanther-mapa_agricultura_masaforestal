@@ -66,7 +66,7 @@ pop_agricola <- paste0("<b><br/> Terrenos agrícolas: </b>", as.character(100*ro
                        "<b><br/> Tamaño promedio terreno sembrado: </b>", as.character(100*round(as.numeric(ac_mapa_mc$TERRENO_PROM_SEM_16), 3)), "%",
                        "<b><br/> Tamaño promedio terreno: </b>", as.character(100*round(as.numeric(ac_mapa_mc$TERRENO_PROM_TOT_16), 3)), "%")
 
-pop_forestal <- paste0("<b><br/> Terrenos forestales: </b>", as.character(df_ac$F_TOTAL), " ha, ", as.character(100*round(as.numeric(ac_mapa_mc$PCT_FORESTAL), 3)), "%")
+pop_forestal <- paste0("<b><br/> Terrenos forestales: </b>", as.character(100*round(as.numeric(ac_mapa_mc$PCT_FORESTAL), 3)), "%")
 
 pop_pecuario <- paste0("<b><br/> Terrenos agrícolas: </b>", as.character(100*round(as.numeric(ac_mapa_mc$TERRENOS.1), 3)), "%",
                        "<b><br/> Tamaño promedio terreno sembrado: </b>", as.character(100*round(as.numeric(ac_mapa_mc$TERRENO_PROM_SEM_16), 3)), "%",
