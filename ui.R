@@ -115,11 +115,12 @@ bootstrapPage(theme = shinytheme("flatly"),
                                     tabPanel("Resultado de correlación de Pearson",
                                              h2("Correlación de Pearson"),
                                              DT::dataTableOutput("tabla5"),
-                                             ggcorrplot(df_correlacion_pearson,
+                                             ggcorrplot(df_correlacion_pearson_melt,
                                                         hc.order = TRUE,
                                                         type = "lower",
                                                         outline.color = "white",
-                                                        lab = FALSE)                                    )
+                                                        lab = FALSE)               
+                                             )
                          ),
                          
                          tabPanel("Correlación",
