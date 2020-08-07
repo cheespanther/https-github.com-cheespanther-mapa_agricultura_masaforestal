@@ -87,34 +87,39 @@ bootstrapPage(theme = shinytheme("flatly"),
                                                       selectInput("CONCAT_ESPE",
                                                                   "Clave de área de control:",
                                                                   c("Todos",
-                                                                    unique(as.character(comparado_sum_ac$CONCAT_ESPE))))
+                                                                    unique(as.character(sum_comparables_ac$CONCAT_ESPE))))
                                                )
                                              ),
                                              DT::dataTableOutput("tabla3"),
                                     ),
-                                    tabPanel("Marqués de Comillas cambios 2007 - 2016",
+                                    tabPanel("Datos comparables 2007 - 2016",
                                              h2("Cambios por área de control"),
+                                             ("NOTA: Datos completos solo para el Municipio Marqués de Comillas."),
                                              fluidRow(
                                                column(4,
                                                       selectInput("CVE_CONCAT",
                                                                   "Clave de área de control:",
                                                                   c("Todos",
-                                                                    unique(as.character(df_correlacion_mc$CVE_CONCAT))))
+                                                                    unique(as.character(df_correlacion$CVE_CONCAT))))
                                                ),
                                                column(4,
                                                       selectInput("NOM_MUN",
                                                                   "Municipio:",
                                                                   c("Todos",
-                                                                    unique(as.character(df_correlacion_mc$NOM_MUN))))
+                                                                    unique(as.character(df_correlacion$NOM_MUN))))
                                                )
                                              ),
                                              DT::dataTableOutput("tabla4"),
                                     ),
                                     
-                                    tabPanel("Datos para correlaciones",
-                                             h2("Datos para correlacoines"),
+                                    tabPanel("Resultado de correlación de Pearson",
+                                             h2("Correlación de Pearson"),
                                              DT::dataTableOutput("tabla5"),
-                                    )
+                                             ggcorrplot(df_correlacion_pearson,
+                                                        hc.order = TRUE,
+                                                        type = "lower",
+                                                        outline.color = "white",
+                                                        lab = FALSE)                                    )
                          ),
                          
                          tabPanel("Correlación",

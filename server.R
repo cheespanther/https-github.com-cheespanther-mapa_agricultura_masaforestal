@@ -52,7 +52,7 @@ function(input, output, session) {
   
   # VISUALIZACIÓN DE DATOS 3
   output$tabla3 = DT::renderDataTable({
-    data <- comparado_sum_esp
+    data <- sum_comparables_esp
     DT::datatable(
       extensions = 'Buttons',
       options = list(
@@ -93,7 +93,7 @@ function(input, output, session) {
   
   
   output$tabla5 <- DT::renderDataTable(
-    DT::datatable(df_correlacion_mc_b, options = list(paging = FALSE))
+    DT::datatable(df_correlacion_pearson, options = list(paging = FALSE))
   )
   
   # VISUALIZAR CORRELACIONES

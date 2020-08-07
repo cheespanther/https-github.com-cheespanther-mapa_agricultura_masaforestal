@@ -161,7 +161,6 @@ df_correlacion_mc[is.na(df_correlacion_mc)] <- 0
 matriz_correlacion <- df_correlacion_mc[,c(11:51)]
 
 df_correlacion_pearson <- round(cor(matriz_correlacion, method = "pearson"),2)
-df_correlacion_pearson[] <- lapply(df_correlacion_pearson[], as.numeric)
 df_correlacion_pearson_melt <- melt(df_correlacion_pearson)
 
 # CREAR ARCHIVOS TIPO RData PARA ALMACENAR LOS RESULTADOS DEL PROCESAMIENTO DE LOS DATOS
