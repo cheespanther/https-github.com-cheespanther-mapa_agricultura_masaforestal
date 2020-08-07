@@ -1,15 +1,22 @@
 # CARGAR LIBRERIAS UTILIZADAS DE R
 library(sf)
+library(sp)
 library(geojsonio)
 library(rgdal)
 library(rmapshaper)
 library(rio)
 library(dplyr)
 library(plyr)
+library(ggplot2)
+library(maptools)
+library(raster)
+library(corrplot)
+library(reshape2)
+library(ggcorrplot)
 
 # LECTURA DE SHAPE BASE DE ÁREAS DE CONTROL DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
-ac_mapa <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/ac_mapa.geojson",  what = "sp")
+ac_mapa <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/ac_mapa.geojson")
 colnames(ac_mapa@data) <- toupper(colnames(ac_mapa@data)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 ac_mapa@data$NOM_ENT <- toupper(ac_mapa@data$NOM_ENT) # CONVERTIR TODOS LOS NOMBRES DE ENTIDADES A MAYUSCULAS
 ac_mapa@data$NOM_MUN <- toupper(ac_mapa@data$NOM_MUN) # CONVERTIR TODOS LOS NOMBRES DE MUNICIPIO A MAYUSCULAS
@@ -17,11 +24,11 @@ ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CV
 
 ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
 
-autocorr_1 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr_1.geojson",  what = "sp")
-serie_3 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_3.geojson",  what = "sp")
-serie_6 <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_6.geojson",  what = "sp")
-cambios_ndvi <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_ndvi.geojson",  what = "sp")
-cambios_usv <- geojson_read("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv.geojson",  what = "sp")
+autocorr_1 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr_1.geojson")
+serie_3 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_3.geojson")
+serie_6 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_6.geojson")
+cambios_ndvi <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_ndvi.geojson")
+cambios_usv <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv.geojson")
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN PECUARIAS DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
@@ -49,38 +56,41 @@ colnames(datos_cambios) <- toupper(colnames(datos_cambios)) # CONVERTIR TODOS LO
 # FUENTE: INEGI
 cambio_usv <- import('https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/control_selva.csv')
 
-# UNIFICAR Y AGRUPAR ID'S DE CULTIVOS 
-concentrado16$CULTI_ESPE <- recode(concentrado16$CULTI_ESPE, 'CAFE CIMARRON' = 'CAFE')
 
 # PROCESAMIENTO DE LOS DATOS
 
 # CÁLCULO Y CONCATENACIÓN SUMAS POR ÁREA DE CONTROL DE TAMAÑO PROMEDIO DE LOS TERRENOS REGISTRADOS TOTALES Y CON SUPERFICIE SEMBRADA
 concentrado16$TERRENO_PROM_TOT <- as.numeric(as.character(concentrado16$SUP_TOTAL))/as.numeric(as.character(concentrado16$TERRENOS))
-concentrado16$TERRENO_PROM_SEM <- as.numeric(as.character(concentrado16$SUP_SEMB))/as.numeric(as.character(concentrado16$NUM_TERR))
-concentrado16$PCT_SUPSEM <- as.numeric(as.character(concentrado16$SUP_SEMB)) / as.numeric(as.character(concentrado16$SUP_TOTAL))
+concentrado16$TERRENO_PROM_SEM <- as.numeric(as.character(concentrado16$SUP_CARTO))/as.numeric(as.character(concentrado16$NUM_TERR))
+concentrado16$PCT_SUPSEM <- 100*as.numeric(as.character(concentrado16$SUP_SEMB)) / as.numeric(as.character(concentrado16$SUP_TOTAL))
+concentrado16$PCT_SUPSEM_ACTIVA <- 100*as.numeric(as.character(concentrado16$PCT_SUPSEM)) / as.numeric(as.character(concentrado16$SUP_TOTAL))
+concentrado16$CULTI_ESPE <- gsub('CAFE CIMARRON', 'CAFE', concentrado16$CULTI_ESPE)
+
 colnames(concentrado16) <- paste(colnames(concentrado16), "_16", sep="")
 concentrado16$CULTI_ESPE <- laply(concentrado16$CULTI_ESPE_16, toupper) # CONVERTIR TODOS LOS VALORES A MAYUSCULAS
 concentrado16$CONCAT_ESPE <- paste(concentrado16$CVE_CONCAT, concentrado16$CULTI_ESPE, sep="_")
 concentrado16$PCT_AGRICOLA <- as.numeric(as.character(concentrado16$NUM_TERR_16))/as.numeric(as.character(concentrado16$TERRENOS_16))
 
-esp_sum16 <- ddply(concentrado16, .(CONCAT_ESPE), numcolwise(sum))
+esp_sum16 <- ddply(concentrado16[,c(24,23,14,15,16:22)], .(CONCAT_ESPE), numcolwise(sum))
 esp_sum16$CVE_CONCAT <- substr(esp_sum16$CONCAT_ESPE, 1, 13)
+esp_sum16$CULTI_ESPE <- substr(esp_sum16$CONCAT_ESPE, 15, length(esp_sum16$CVE_CONCAT))
+
 esp_sum16 <- merge(ac_mapa@data, esp_sum16, by = "CVE_CONCAT")
-ac_sum16 <- ddply(concentrado16, .(CVE_CONCAT_16), numcolwise(sum))
-ac_sum16 <- merge(ac_mapa@data, ac_sum16, by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_16")
+
+ac_sum16 <- ddply(concentrado16[,c(11,24,23,14,15,16:22)], .(CVE_CONCAT_16), numcolwise(sum))
 
 # CREACIÓN DE DATA FRAME CON LOS DATOS DE PRODUCCIÓN AGRÍCOLA, PECUARIA Y FORESTAL Y ÁREAS DE CONTROL
-df_ac <- merge(ac_mapa@data, forestal[,c(10,col_f)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
-df_ac <- merge(df_ac, pecuario[,c(10,col_p)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
-df_ac <- merge(df_ac, ac_sum16[,c(1,10,11,12,16,19,20:25)], by = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
-df_ac[is.na(df_ac)] <- 0
+df_ac_16 <- merge(ac_mapa@data, forestal[,c(10,col_f)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
+df_ac_16 <- merge(df_ac_16, pecuario[,c(10,col_p)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
+df_ac_16 <- merge(df_ac_16, ac_sum16, by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_16", all.y=TRUE, all.x = TRUE)
+df_ac_16[is.na(df_ac_16)] <- 0
 
 # CÁLCULO DE PORCENTAJES DE TERRENOS OCUPADOS PARA LA ACTIVIDAD FORESTAL, AGRÍCOLA Y PECAUARIA Y SU SUMA (PCT_OCUPADO)
-df_ac$PCT_FORESTAL <- df_ac$F_TOTAL/as.numeric(as.character(df_ac$TERRENOS))
-df_ac$PCT_PECUARIO <- df_ac$P_TOTAL/as.numeric(as.character(df_ac$TERRENOS))
-df_ac$PCT_OCUPADO <- (df_ac$PCT_FORESTAL + df_ac$PCT_PECUARIO + df_ac$PCT_AGRICOLA)
-df_ac[is.na(df_ac)] <- 0
-
+df_ac_16$PCT_FORESTAL <- 100*df_ac_16$F_TOTAL/as.numeric(as.character(df_ac_16$TERRENOS))
+df_ac_16$PCT_PECUARIO <- 100*df_ac_16$P_TOTAL/as.numeric(as.character(df_ac_16$TERRENOS))
+df_ac_16$PCT_AGRICOLA <- 100*df_ac_16$NUM_TERR_16/as.numeric(as.character(df_ac_16$TERRENOS))
+df_ac_16$PCT_OCUPADO <- (df_ac_16$PCT_FORESTAL + df_ac_16$PCT_PECUARIO + df_ac_16$PCT_AGRICOLA)
+df_ac_16[is.na(df_ac_16)] <- 0
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN AGRÍCOLA DEL 2007 DE GITHUB
 # FUENTE: CENSO AGROPECUARIO 2007
@@ -95,82 +105,119 @@ concentrado07$UP_PROM_SEMB <- as.numeric(as.character(concentrado07$SUP_SEMB_07)
 concentrado07$CULTI_ESPE<- laply(concentrado07$CULTI_ESPE_07, toupper) # CONVERTIR TODOS LOS VALORES A MAYUSCULAS
 
 # UNIFICAR Y AGRUPAR ID'S DE CULTIVOS 
-concentrado07$CULTI_ESPE <- recode(concentrado07$CULTI_ESPE, 'MAIZ GRANO' = 'MAIZ')
+concentrado07$CULTI_ESPE <- gsub('MAIZ GRANO', 'MAIZ', concentrado07$CULTI_ESPE)
 concentrado07$CONCAT_ESPE <- paste(concentrado07$CVE_CONCAT, concentrado07$CULTI_ESPE, sep="_")
 
 esp_sum07 <- ddply(concentrado07, .(CONCAT_ESPE), numcolwise(sum))
-esp_sum07 <- merge(concentrado07, esp_sum07, by.x = "CONCAT_ESPE", by.y="CONCAT_ESPE")
-ac_sum07 <- ddply(concentrado07, .(CVE_CONCAT_07), numcolwise(sum))
-ac_sum07 <- merge(concentrado07, ac_sum07, by.x = "CVE_CONCAT_07", by.y="CVE_CONCAT_07")
+esp_sum07$CVE_CONCAT <- substr(esp_sum07$CONCAT_ESPE, 1, 13)
+esp_sum07$CULTI_ESPE <- substr(esp_sum07$CONCAT_ESPE, 15, length(esp_sum07$CVE_CONCAT))
+
+esp_sum07 <- merge(ac_mapa@data, esp_sum07, by.x = "CVE_CONCAT", by.y="CVE_CONCAT")
+
+ac_sum07 <- ddply(concentrado07[,c(7, 11:25)], .(CVE_CONCAT_07), numcolwise(sum))
 
 # CREACIÓN DE DATA FRAME CON LOS DATOS DE PRODUCCIÓN AGRÍCOLA DEL 2007
-dfb <- merge(ac_mapa@data, ac_sum07[,c(1,7,8,9,10,11,12,15,16,17)], by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_07")
-dfb[is.na(dfb)] <- 0
+df_ac_07 <- merge(ac_mapa@data, ac_sum07, by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_07")
+df_ac_07[is.na(df_ac_07)] <- 0
 
 # CONCATENAR DATOS 2007 Y 2016 PARA ESTIMAR CAMBIOS
 comparado_esp <- merge(esp_sum07, esp_sum16, by.x = "CONCAT_ESPE", by.y = "CONCAT_ESPE", all.x = TRUE, all.y = TRUE)
 
 # CONCATENAR CASOS COMPARABLES QUE TENGAN DATOS DE CULTIVO Y ÁREA DE CONTROL QUE COINCIDAN
 casos_comparables_esp <- comparado_esp[complete.cases(comparado_esp),]
-sum_comparables_esp <- ddply(casos_comparables_esp, .(CONCAT_ESPE), numcolwise(sum))
-casos_comparables_esp_b <- casos_comparables_esp[,c(1, 41:49, 30:40, 55:65)]
+casos_comparables_esp <- casos_comparables_esp[,c(1:11,27, 16:26, 38:46)]
 
-# UN "CASO COMPARABLE" ES AQUEL SIN CELDAS VACÍAS
-comparado_sum_esp <- ddply(casos_comparables_esp_b, .(CONCAT_ESPE), numcolwise(sum))
-colnames(comparado_sum_esp) <- c("CONCAT_ESPE", "UNIDADES DE PRODUCCIÓN", "SUPERFICE CARTO 07", "SUPERFICIE SEMBRADA 07", "SUPERFICIE COSECHADA 07", "TONELADAS PRODUCIDAS 2007", "TONELADAS POR HA 2007", "SUPERFICIE SEMBRADA % 2007", "SHAPE_LENG_07", "SHAPE_AREA_07", "TERRENO PROMEDIO GENERAL 07", "TERRENO PROMEDIO SEMBRADO 07", "UNIDADES DE PRODUCCION PROMEDIO SEMBRADA", "TERRENOS TOTALES EN LA AC", "SUPERFICIE TOTAL 2016", "TERRENOS SEMBRADOS 2016", "SUPERFICIE CARTO 2016", "SUPERFICIE SEMBRADA 2016", "SHAPE_LENG_16", "SHAPE_AREA_16", "TERRENO PROMEDIO GENERAL 2016", "TERRENO PROMEDIO SEMBRADO 2016", "SUPERFICIE SEMBRADA % 2016" )
-comparado_sum_esp$CAMBIO_AGRICOLA <- as.numeric(as.character(comparado_sum_esp$`SUPERFICIE SEMBRADA 2016`)) - as.numeric(as.character(comparado_sum_esp$`SUPERFICIE SEMBRADA 07`))
-comparado_sum_esp$CAMBIO_AGRICOLA_RELATIVO <- as.numeric(as.character(comparado_sum_esp$CAMBIO_AGRICOLA)) / as.numeric(as.character(comparado_sum_esp$`SUPERFICIE SEMBRADA 07`))
+sum_comparables_esp <- ddply(casos_comparables_esp[,c(1,13:32)], .(CONCAT_ESPE), numcolwise(sum))
+sum_comparables_esp <- merge(comparado_esp[,c(1:11)], sum_comparables_esp, by = "CONCAT_ESPE")
+colnames(sum_comparables_esp) <- c("CONCAT_ESPE", "CVE_CONCAT", "CONTROL", "CLAVE_ENTIDAD", "NOMBRE_ENTIDAD", "CLAVE_MUNICIPIO", "NOMBRE_MUNICIPIO", "CLAVE_AGEB", "CLAVE_MANZANA", "TERRENOS_TOTALES", "SUPERFICIE_TOTAL", "SUPERFICIE_CARTOGRAFICA_07", "UNIDADES_PRODUCTIVAS_07", "SUPERFICIE_SEMBRADA_07", "SUPERFICIE_COSECHADA_07", "TONELADAS_PRODUCIDAS_07", "TONELADAS/HECTAREA_07", "SUPERFICIE_SEMBRADA_%_07", "PERIMETRO_SHAPE", "AREA_SHAPE", "UNIDAD_PRODUCTIVA_PROMEDIO", "UNIDAD_PRODUCTIVA_SEMBRADA", "TERRENOS_TOTALES", "SUPERFICE_CARTOGRAFICA_16", "SUPERFICIE_SEMBRADA_16", "PERIMETRO_SHAPE", "AREA_SHAPE", "TERRENO_PROMEDIO_16", "TERRENO_PROMEDIO_SEMBRADO_16", "SUPERFICIE_SEBRADA_%_16", "SUPERFICIE_SEMBRADA_ACTIVA_%_16")
+sum_comparables_esp$CAMBIO_AGRICOLA <- as.numeric(as.character(sum_comparables_esp$SUPERFICIE_SEMBRADA_16)) - as.numeric(as.character(sum_comparables_esp$SUPERFICIE_SEMBRADA_07))
+sum_comparables_esp$CAMBIO_AGRICOLA_PCT <- as.numeric(as.character(sum_comparables_esp$`SUPERFICIE_SEBRADA_%_16`)) - as.numeric(as.character(sum_comparables_esp$`SUPERFICIE_SEMBRADA_%_07`))
 
 # SUMA DE CASOS COMPARABLES POR ÁREA DE CONTROL
-
 # CONCATENAR DATOS 2007 Y 2016 PARA ESTIMAR CAMBIOS
-comparado_ac <- merge(ac_sum07, ac_sum16, by.x = "CVE_CONCAT_07", by.y = "CVE_CONCAT", all.x = TRUE, all.y = TRUE)
-casos_comparables_ac <- comparado_ac[complete.cases(comparado_ac),]
-casos_comparables_ac_b <- casos_comparables_ac[,c(1, 41:49, 30:40, 54:64)]
 
+comparado_ac <- merge(ac_sum07, ac_sum16, by.x = "CVE_CONCAT_07", by.y = "CVE_CONCAT_16", all.x = TRUE, all.y = TRUE)
+casos_comparables_ac <- merge(ac_mapa@data, comparado_ac, by.x = "CVE_CONCAT", by.y = "CVE_CONCAT_07", all.x = TRUE)
+ 
+sum_comparables_ac <- casos_comparables_ac[complete.cases(casos_comparables_ac),]
+colnames(sum_comparables_ac) <- c("CVE_CONCAT", "CONTROL", "CLAVE_ENTIDAD", "NOMBRE_ENTIDAD", "CLAVE_MUNICIPIO", "NOMBRE_MUNICIPIO", "CLAVE_AGEB", "CLAVE_MANZANA", "TERRENOS_TOTALES", "SUPERFICIE_TOTAL", "SUPERFICIE_CARTOGRAFICA_07", "UNIDADES_PRODUCTIVAS_07", "SUPERFICIE_SEMBRADA_07", "SUPERFICIE_COSECHADA_07", "TONELADAS_PRODUCIDAS_07", "TONELADAS/HECTAREA_07", "SUPERFICIE_SEMBRADA_%_07", "PERIMETRO_SHAPE", "AREA_SHAPE", "UNIDAD_PRODUCTIVA_PROMEDIO", "UNIDAD_PRODUCTIVA_SEMBRADA", "TERRENOS_TOTALES", "SUPERFICE_CARTOGRAFICA_16", "SUPERFICIE_SEMBRADA_16", "PERIMETRO_SHAPE", "AREA_SHAPE", "TERRENO_PROMEDIO_16", "TERRENO_PROMEDIO_SEMBRADO_16", "SUPERFICIE_SEBRADA_%_16", "SUPERFICIE_SEMBRADA_ACTIVA_%_16")
 
-# UN "CASO COMPARABLE" ES AQUEL SIN CELDAS VACÍAS
-comparado_sum_ac <- ddply(casos_comparables_ac_b, .(CVE_CONCAT_07), numcolwise(sum))
-colnames(comparado_sum_ac) <- c("CVE_CONCAT", "SUPERFICIE TOTAL", "SUPERFICIE CARTO 07", "UNIDADES DE PRODUCCIÓN 07", "SUPERFICIE SEMBRADA 07", "SUPERFICIE COSECHADA 07", "TONELADAS PRODUCIDAS 2007", "TONELADAS POR HA 2007", "SUPERFICIE SEMBRADA % 2007", "SHAPE_LENG_07", "SHAPE_AREA_07", "AREA PROMEDIO GENERAL 07 UP", "AREA PROMEDIO SEMBRADO 07 UP", "TERRENOS TOTALES EN LA AC", "SUPERFICIE TOTAL 2016", "TERRENOS SEMBRADOS 2016", "SUPERFICIE CARTO 2016", "SUPERFICIE SEMBRADA 2016", "SHAPE_LENG_16", "SHAPE_AREA_16", "TERRENO PROMEDIO GENERAL 2016", "TERRENO PROMEDIO SEMBRADO 2016", "SUPERFICIE SEMBRADA % 2016", "PORCENTAJE TERRENOS AGRÍCOLAS 16")
-comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA <- as.numeric(as.character(comparado_sum_ac$`SUPERFICIE SEMBRADA 2016`)) - as.numeric(as.character(comparado_sum_ac$`SUPERFICIE SEMBRADA 07`))
-comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA_REL <- comparado_sum_ac$CAMBIO_SUP_SEMB_AGRICOLA / comparado_sum_ac$`SUPERFICIE SEMBRADA 07`
+sum_comparables_ac$CAMBIO_SUP_SEMB_AGRICOLA <- as.numeric(as.character(sum_comparables_ac$SUPERFICIE_SEMBRADA_16)) - as.numeric(as.character(sum_comparables_ac$SUPERFICIE_SEMBRADA_07))
+sum_comparables_ac$CAMBIO_SUP_SEMB_AGRICOLA_PCT <- as.numeric(as.character(sum_comparables_ac$`SUPERFICIE_SEBRADA_%_16`)) - as.numeric(as.character(sum_comparables_ac$`SUPERFICIE_SEMBRADA_%_07`))
 
-ac_mapa_b <- merge(ac_mapa@data, comparado_sum_ac, by = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
+ac_mapa_b <- merge(ac_mapa, sum_comparables_ac[,c(1, 9:32)], by = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
+ac_mapa_b <- merge(ac_mapa_b, datos_cambios, by.x = "CONTROL", by.y = "ETIQUETAS DE FILA")
+ac_mapa_b <- merge(ac_mapa_b, df_ac_16[,c(2,11,12,14,13,22,23,24,25)], by = "CONTROL")
 
+ac_mapa_mc <- subset(ac_mapa_b, ac_mapa_b$NOM_MUN == "MARQUÉS DE COMILLAS")
 
 ########### CONTROL
 # CORRELACIÓN DE DATOS
-df_correlacion_mc <- merge(ac_mapa_b, datos_cambios, by.x = "CONTROL" , by.y = "ETIQUETAS DE FILA")
-df_correlacion_mc <- merge(df_correlacion_mc, df_ac[,c(2, 22:26)], by = "CONTROL")
+df_correlacion <- as.data.frame(ac_mapa_b)
+df_correlacion_mc <- as.data.frame(ac_mapa_mc)
+df_correlacion_mc[,c(11:51)] <- lapply(df_correlacion_mc[,c(11:51)], as.numeric)
 df_correlacion_mc[is.na(df_correlacion_mc)] <- 0
 
-df_correlacion_mc_b <- df_correlacion_mc[,c(1,9:50)]
-df_correlacion_mc_c <- df_correlacion_mc_b[complete.cases(df_correlacion_mc_b),]
-df_correlacion_mc_d <- df_correlacion_mc_c[,c(2:43)]
-df_correlacion_mc_d$TERRENOS <- as.numeric(df_correlacion_mc_d$TERRENOS)
+matriz_correlacion <- df_correlacion_mc[,c(11:51)]
 
-df_correlacion_pearson <- cor(df_correlacion_mc_d, method = "pearson")
-
-# UNIR DATOS ANALÍTICOS CON DATOS GEOESPACIALES
-
-ac_mapa_mc <- subset(ac_mapa, ac_mapa@data$NOM_MUN=="MARQUÉS DE COMILLAS")
-ac_mapa_mc <- merge(ac_mapa_mc, df_correlacion_mc, by = "CONTROL")
-
-# ac_mapa@data = data.frame(ac_mapa@data, comparado_sum_ac[match(ac_mapa@data[,"CVE_CONCAT"], comparado_sum_ac[,"CVE_CONCAT_07"]),])
+df_correlacion_pearson <- round(cor(matriz_correlacion, method = "pearson"),2)
+df_correlacion_pearson[] <- lapply(df_correlacion_pearson[], as.numeric)
+df_correlacion_pearson_melt <- melt(df_correlacion_pearson)
 
 # CREAR ARCHIVOS TIPO RData PARA ALMACENAR LOS RESULTADOS DEL PROCESAMIENTO DE LOS DATOS
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/data/Rdata/")
 
-save(ac_mapa, ac_mapa_mc, serie_3, serie_6, file = "carto.RData")
-save(df_ac, file = "datos.RData")
+save(ac_mapa, ac_mapa_b, ac_mapa_mc, serie_3, serie_6, file = "carto.RData")
+save(df_ac_16, df_ac_07, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
-save(comparado_ac, comparado_esp, comparado_sum_ac, comparado_sum_esp, file = "comparados.RData")
-save(df_correlacion_mc, df_correlacion_mc_b, df_correlacion_mc_c, df_correlacion_mc_d, df_correlacion_pearson, file = "correlaciones.RData")
+save(comparado_ac, comparado_esp, casos_comparables_ac, casos_comparables_esp, sum_comparables_ac, sum_comparables_esp, file = "comparados.RData")
+save(df_correlacion, df_correlacion_mc, df_correlacion_pearson, df_correlacion_pearson_melt, file = "correlaciones.RData")
 save(autocorr_1, file = "autocorrelaciones.RData")
 save(cambios_ndvi, cambios_usv, file = "cambios.RData")
 
 # REGRESAR AL ENTORNO GENERAL LOCAL
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal")
+
+ggcorrplot(df_correlacion_pearson,
+           hc.order = TRUE,
+           type = "lower",
+           outline.color = "white",
+           lab = FALSE)
+
+ggheatmap <- ggplot(melted_cormat, aes(Var1, Var2, fill = value))+
+  geom_tile(color = "white")+
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+                       name="Pearson\nCorrelation") +
+  theme_minimal()+ # minimal theme
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+                                   size = 12, hjust = 1))+
+  coord_fixed()
+# Print the heatmap
+print(ggheatmap)
+
+ggheatmap + 
+  geom_text(aes(Var1, Var2, label = value), color = "black", size = 4) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    axis.ticks = element_blank(),
+    legend.justification = c(1, 0),
+    legend.position = c(0.6, 0.7),
+    legend.direction = "horizontal")+
+  guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
+                               title.position = "top", title.hjust = 0.5))
+
+library(GGally)
+
+# Create data 
+data <- matriz_correlacion
+
+# Check correlations (as scatterplots), distribution and print corrleation coefficient 
+ggpairs(data, title="correlogram with ggpairs()") 
 
 # AUTOCORRELACIÓN
 library(spdep)

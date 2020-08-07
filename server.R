@@ -99,24 +99,23 @@ function(input, output, session) {
   # VISUALIZAR CORRELACIONES
   # Combine the selected variables into a new data frame
   selectedData1 <<- reactive({
-    df_correlacion_mc_d[, c(input$xcol)]
+    matriz_correlacion[, c(input$xcol)]
   })
   
   selectedData2 <<- reactive({
-    df_correlacion_mc_d[, c(input$ycol)]
+    matriz_correlacion[, c(input$ycol)]
   })
   
   selectedData3 <<- reactive({
-    df_correlacion_mc_d[, c(input$tamano)]
+    matriz_correlacion[, c(input$tamano)]
   })
-  
   
   clusters <- reactive({
     kmeans(selectedData(), input$tamano) # NO SE USA
   })
   
   output$plot1 <- renderPlot({
-    data <- df_correlacion_mc_d
+    data <- matriz_correlacion
     ggplot(data, aes(x=selectedData1(), y=selectedData2(), size = selectedData3())) +
       geom_point(alpha=0.7) +
       geom_smooth(method='lm')
@@ -124,7 +123,7 @@ function(input, output, session) {
   
   # GENERAR GRÁFICAS
   output$grafica1 <- renderPlot({
-    scatterplot(df_correlacion_mc_d$`TONELADAS POR HA 2007`, df_correlacion_mc_d$`TONELADAS PRODUCIDAS 2007`)
+    scatterplot(matriz_correlacion$`TONELADAS POR HA 2007`, matriz_correlacion$`TONELADAS PRODUCIDAS 2007`)
   })
   
   # GENERAR MAPA
@@ -139,7 +138,7 @@ function(input, output, session) {
     
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = FALSE, smoothFactor = 0.3, 
                             fillOpacity = .7,
-                            fillColor = ~pal_1(as.numeric(TERRENOS.x)),
+                            fillColor = ~pal_1(as.numeric(TERRENOS)),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -272,7 +271,7 @@ function(input, output, session) {
     proxy %>% clearControls()
     if (input$leyenda) {
       proxy %>% 
-        addLegend("topleft", group = "Terrenos totales", pal = pal_1, values = ~TERRENOS.x, opacity = 1.0) %>%
+        addLegend("topleft", group = "Terrenos totales", pal = pal_1, values = ~TERRENOS, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad forestal", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad agricola", pal = pal_3, values = ~PCT_AGRICOLA, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad pecuaria", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0) 
