@@ -160,8 +160,9 @@ df_correlacion_mc[is.na(df_correlacion_mc)] <- 0
 
 matriz_correlacion <- df_correlacion_mc[,c(11:51)]
 
-df_correlacion_pearson <- round(cor(matriz_correlacion, method = "pearson"),2)
-df_correlacion_pearson_melt <- melt(df_correlacion_pearson)
+
+df_correlacion_pearson <- as.data.frame(round(cor(matriz_correlacion, method = "pearson"),2))
+df_correlacion_pearson_melt <- melt(cor(matriz_correlacion, method = "pearson"))
 
 # CREAR ARCHIVOS TIPO RData PARA ALMACENAR LOS RESULTADOS DEL PROCESAMIENTO DE LOS DATOS
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal/data/Rdata/")
@@ -170,7 +171,7 @@ save(ac_mapa, ac_mapa_b, ac_mapa_mc, serie_3, serie_6, file = "carto.RData")
 save(df_ac_16, df_ac_07, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado_ac, comparado_esp, casos_comparables_ac, casos_comparables_esp, sum_comparables_ac, sum_comparables_esp, file = "comparados.RData")
-save(df_correlacion, df_correlacion_mc, df_correlacion_pearson, df_correlacion_pearson_melt, file = "correlaciones.RData")
+save(df_correlacion, df_correlacion_mc, matriz_correlacion, df_correlacion_pearson, df_correlacion_pearson_melt, file = "correlaciones.RData")
 save(autocorr_1, file = "autocorrelaciones.RData")
 save(cambios_ndvi, cambios_usv, file = "cambios.RData")
 
