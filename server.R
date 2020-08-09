@@ -93,21 +93,21 @@ function(input, output, session) {
   
   
   output$tabla5 <- DT::renderDataTable(
-    DT::datatable(df_correlacion_mc_b, options = list(paging = FALSE))
+    DT::datatable(df_correlacion_pearson, options = list(paging = FALSE))
   )
   
   # VISUALIZAR CORRELACIONES
   # Combine the selected variables into a new data frame
   selectedData1 <<- reactive({
-    df_correlacion_mc_d[, c(input$xcol)]
+    matriz_correlacion[, c(input$xcol)]
   })
   
   selectedData2 <<- reactive({
-    df_correlacion_mc_d[, c(input$ycol)]
+    matriz_correlacion[, c(input$ycol)]
   })
   
   selectedData3 <<- reactive({
-    df_correlacion_mc_d[, c(input$tamano)]
+    matriz_correlacion[, c(input$tamano)]
   })
   
   clusters <- reactive({
@@ -115,7 +115,7 @@ function(input, output, session) {
   })
   
   output$plot1 <- renderPlot({
-    data <- df_correlacion_mc_d
+    data <- matriz_correlacion
     ggplot(data, aes(x=selectedData1(), y=selectedData2(), size = selectedData3())) +
       geom_point(alpha=0.7) +
       geom_smooth(method='lm')
@@ -123,22 +123,28 @@ function(input, output, session) {
   
   # GENERAR GRÁFICAS
   output$grafica1 <- renderPlot({
-    scatterplot(df_correlacion_mc_d$`TONELADAS POR HA 2007`, df_correlacion_mc_d$`TONELADAS PRODUCIDAS 2007`)
+    scatterplot(matriz_correlacion$`TONELADAS POR HA 2007`, matriz_correlacion$`TONELADAS PRODUCIDAS 2007`)
   })
   
   # GENERAR MAPA
   output$mapa <- renderLeaflet({
     
     m <-leaflet(ac_mapa_mc) %>%
-      addMapPane("correlacion_1", zIndex = 430) %>% # shown below ames_circles
-      addMapPane("cambios_ndvi", zIndex = 420) %>% # shown above ames_lines
+      addMapPane("A", zIndex = 440) %>% #
+      addMapPane("B", zIndex = 430) %>% # 
+      addMapPane("C", zIndex = 420) %>% # 
+      addMapPane("D", zIndex = 410) %>% # 
+      addMapPane("E", zIndex = 410) %>% #
+      addMapPane("F", zIndex = 400) %>% # 
+      
       addTiles(group = "OSM (default)") %>%
       addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
       addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite")
     
-    m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = FALSE, smoothFactor = 0.3, 
+    m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = FALSE, smoothFactor = 0.3,
+                            options = pathOptions(pane = "A"),
                             fillOpacity = .7,
-                            fillColor = ~pal_1(as.numeric(TERRENOS.x)),
+                            fillColor = ~pal_1(as.numeric(TERRENOS)),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -158,6 +164,7 @@ function(input, output, session) {
 
     # AGREGAR CAPA DE DATOS DE PRODUCCIÓN
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
+                            options = pathOptions(pane = "B"),
                             fillOpacity = .7,
                             fillColor = ~pal_2(PCT_FORESTAL),
                             opacity = .3,
@@ -177,7 +184,8 @@ function(input, output, session) {
                               direction = "auto"),
                             popup = ~pop_forestal)
     
-    m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
+    m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3,
+                            options = pathOptions(pane = "C"),
                             fillOpacity = .7,
                             fillColor = ~pal_3(PCT_AGRICOLA),
                             opacity = .3,
@@ -198,6 +206,7 @@ function(input, output, session) {
                             popup = ~pop_agricola)
 
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
+                            options = pathOptions(pane = "C"),
                             fillOpacity = .7,
                             fillColor = ~pal_4(PCT_PECUARIO),
                             opacity = .3,
@@ -217,40 +226,29 @@ function(input, output, session) {
                               direction = "auto"),
                             popup = ~pop_pecuario)
     
-    # AGREGAR CAPA DE DATOS DE AUTOCORRELACIÓN
-    m <- m %>%  addPolygons(data = autocorr_1, stroke = TRUE, smoothFactor = 0.3, 
-                            fillOpacity = .7,
+    # CAPA DE AUTOCORRELACIÓN DE LA DEFORESTACIÓN
+    m <- m %>%  addPolygons(data = autocorr_1, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
+                            options = pathOptions(pane = "D"),
                             fillColor = ~pal_0(ha_1),
-                            opacity = .3,
-                            weight = 1,
-                            color = "#4D4D4D",
-                            dashArray = "2",
-                            highlight = highlightOptions(
-                              weight = 1,
-                              color = "#4D4D4D",
-                              fillOpacity = 0.1,
-                              dashArray = "2",
-                              bringToFront = TRUE),
-                            group = "Autocorr 1",
-                            labelOptions = labelOptions(
-                              style = list("font-weight" = "normal", padding = "3px 8px"),
-                              textsize = "15px",
-                              direction = "auto"),
-                            label = ~paste0(Id, ": ", formatC(ha_1), big.mark = ","))
+                            group = "Autocorrelación deforestación")
     
+    # CAPA DE CAMBIOS DE NDVI
     m <- m %>%  addPolygons(data = cambios_ndvi, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                            options = pathOptions(pane = "E"),
                             fillColor = ~pal_7(as.numeric(gridcode)),
                             group = "Cambios NDVI")
     
+    # CAPA DE CAMBIOS DE USO DE SUELO
     m <- m %>%  addPolygons(data = cambios_usv, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                            options = pathOptions(pane = "F"),
                             fillColor = ~pal_8(as.numeric(gridcode)),
                             group = "Cambios USV")
     
     
-    # Layers control
+    # CONTROL DE CAPAS
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
-      overlayGroups = c("Actividad forestal", "Actividad agricola","Actividad pecuaria", "Terrenos totales", "Autocorr 1", "Cambios NDVI", "Cambios USV"),
+      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación deforestación", "Cambios NDVI", "Cambios USV"),
       options = layersControlOptions(collapsed = FALSE)
     )
     
@@ -258,18 +256,13 @@ function(input, output, session) {
     
   })
   
-  # Incremental changes to the map (in this case, replacing the
-  # circles when a new color is chosen) should be performed in
-  # an observer. Each independent set of things that can change
-  # should be managed in its own observer.
-  
-  # LEYENDA EN PROXY QUE PERMITE ENCENDER Y APAGAR EN SHINY
+  # LOS PROXIES PERMITEN ENCENDER Y APAGAR ELEMENTOS EN R LEAFLET
   observe({
     proxy <- leafletProxy("mapa", data = ac_mapa_mc)
     proxy %>% clearControls()
     if (input$leyenda) {
       proxy %>% 
-        addLegend("topleft", group = "Terrenos totales", pal = pal_1, values = ~TERRENOS.x, opacity = 1.0) %>%
+        addLegend("topleft", group = "Terrenos totales", pal = pal_0, values = ~TERRENOS, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad forestal", pal = pal_2, values = ~PCT_FORESTAL, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad agricola", pal = pal_3, values = ~PCT_AGRICOLA, opacity = 1.0) %>%
         addLegend("topleft", group = "Actividad pecuaria", pal = pal_4, values = ~PCT_PECUARIO, opacity = 1.0) 
