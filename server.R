@@ -229,9 +229,9 @@ function(input, output, session) {
                             popup = ~pop_pecuario)
     
     # CAPA DE AUTOCORRELACIÓN DE LA DEFORESTACIÓN
-    m <- m %>%  addPolygons(data = autocorr_1, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+    m <- m %>%  addPolygons(data = autocorr_deforestacion, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "E"),
-                            fillColor = ~pal_0(ha_1),
+                            fillColor = ~pal_0(LISA_CL),
                             group = "Autocorrelación deforestación")
     
     # CAPA DE CAMBIOS DE NDVI
