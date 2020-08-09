@@ -136,6 +136,8 @@ function(input, output, session) {
       addMapPane("D", zIndex = 410) %>% # 
       addMapPane("E", zIndex = 410) %>% #
       addMapPane("F", zIndex = 400) %>% # 
+      addMapPane("G", zIndex = 390) %>% # 
+      
       
       addTiles(group = "OSM (default)") %>%
       addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
@@ -233,10 +235,10 @@ function(input, output, session) {
                             group = "Autocorrelación deforestación")
     
     # CAPA DE CAMBIOS DE NDVI
-    m <- m %>%  addPolygons(data = cambios_ndvi, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+    m <- m %>%  addPolygons(data = cambios_usv_forestal, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "E"),
                             fillColor = ~pal_7(as.numeric(gridcode)),
-                            group = "Cambios NDVI")
+                            group = "Cambios forestal")
     
     # CAPA DE CAMBIOS DE USO DE SUELO
     m <- m %>%  addPolygons(data = cambios_usv, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
@@ -245,10 +247,13 @@ function(input, output, session) {
                             group = "Cambios USV")
     
     
+    cambios_usv_total
+    
+    
     # CONTROL DE CAPAS
     m <- m %>% addLayersControl(
       baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
-      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación deforestación", "Cambios NDVI", "Cambios USV"),
+      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación deforestación", "Cambios forestal", "Cambios USV"),
       options = layersControlOptions(collapsed = FALSE)
     )
     

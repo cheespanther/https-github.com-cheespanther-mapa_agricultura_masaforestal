@@ -29,6 +29,7 @@ serie_3 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultu
 serie_6 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_6.geojson")
 cambios_ndvi <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_ndvi.geojson")
 cambios_usv <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv.geojson")
+cambios_usv_forestal <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_forestal.geojson")
 cambios_usv_total <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_total.geojson")
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN PECUARIAS DE GITHUB
@@ -174,7 +175,7 @@ save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado_ac, comparado_esp, casos_comparables_ac, casos_comparables_esp, sum_comparables_ac, sum_comparables_esp, file = "comparados.RData")
 save(df_correlacion, df_correlacion_mc, matriz_correlacion, df_correlacion_pearson, df_correlacion_pearson_melt, file = "correlaciones.RData")
 save(autocorr_1, file = "autocorrelaciones.RData")
-save(cambios_ndvi, cambios_usv, file = "cambios.RData")
+save(cambios_ndvi, cambios_usv, cambios_usv_forestal, cambios_usv_total, file = "cambios.RData")
 
 # REGRESAR AL ENTORNO GENERAL LOCAL
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal")
