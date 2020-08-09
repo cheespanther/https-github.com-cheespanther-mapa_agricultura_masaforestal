@@ -33,7 +33,7 @@ bins_terrenos_tot <- c(0, 10, 20, 50, 100, 150, 200, Inf)
 bins_series <- c(1, 2, 3, 4, 5, 6, 7)
 bins_cambios <- c(1, 2, 3, 4)
 bins_pct <- c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
-bins_autocorr <- c(0, 10, 20, 50, 100)
+bins_autocorr <- c(1,2,3,4,5)
 
 # PALETA DE COLORES
 
