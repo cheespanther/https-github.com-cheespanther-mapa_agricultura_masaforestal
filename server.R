@@ -139,7 +139,7 @@ function(input, output, session) {
       addMapPane("G", zIndex = 390) %>% # 
       
       
-      addTiles(group = "OSM (default)") %>%
+      addTiles(group = "Open Street Map") %>%
       addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
       addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite")
     
@@ -208,7 +208,7 @@ function(input, output, session) {
                             popup = ~pop_agricola)
 
     m <- m %>%  addPolygons(data = ac_mapa_mc, stroke = TRUE, smoothFactor = 0.3, 
-                            options = pathOptions(pane = "C"),
+                            options = pathOptions(pane = "D"),
                             fillOpacity = .7,
                             fillColor = ~pal_4(PCT_PECUARIO),
                             opacity = .3,
@@ -229,20 +229,20 @@ function(input, output, session) {
                             popup = ~pop_pecuario)
     
     # CAPA DE AUTOCORRELACIÓN DE LA DEFORESTACIÓN
-    m <- m %>%  addPolygons(data = autocorr_1, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
-                            options = pathOptions(pane = "D"),
+    m <- m %>%  addPolygons(data = autocorr_1, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                            options = pathOptions(pane = "E"),
                             fillColor = ~pal_0(ha_1),
                             group = "Autocorrelación deforestación")
     
     # CAPA DE CAMBIOS DE NDVI
     m <- m %>%  addPolygons(data = cambios_usv_forestal, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            options = pathOptions(pane = "E"),
+                            options = pathOptions(pane = "F"),
                             fillColor = ~pal_7(as.numeric(gridcode)),
                             group = "Cambios forestal")
     
     # CAPA DE CAMBIOS DE USO DE SUELO
     m <- m %>%  addPolygons(data = cambios_usv, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            options = pathOptions(pane = "F"),
+                            options = pathOptions(pane = "G"),
                             fillColor = ~pal_8(as.numeric(gridcode)),
                             group = "Cambios USV")
     
@@ -252,7 +252,7 @@ function(input, output, session) {
     
     # CONTROL DE CAPAS
     m <- m %>% addLayersControl(
-      baseGroups = c("OSM (default)", "Toner", "Toner Lite"),
+      baseGroups = c("Open Street Map", "Toner", "Toner Lite"),
       overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación deforestación", "Cambios forestal", "Cambios USV"),
       options = layersControlOptions(collapsed = FALSE)
     )
@@ -279,7 +279,7 @@ function(input, output, session) {
     proxy %>% clearControls()
     if (input$leyenda) {
       proxy %>% 
-        addLegend("topleft", group = "Cambios NDVI", pal = pal_7, values = ~as.numeric(gridcode), opacity = 1.0) %>%
+        addLegend("topleft", group = "Cambios forestal", pal = pal_7, values = ~as.numeric(gridcode), opacity = 1.0) %>%
         addLegend("topleft", group = "Cambios USV", pal = pal_8, values = ~as.numeric(gridcode), opacity = 1.0)
     }
   })  
