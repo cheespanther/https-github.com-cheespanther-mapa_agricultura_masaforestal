@@ -1,5 +1,4 @@
 bootstrapPage(theme = shinytheme("flatly"),
-              
               navbarPage("Mapa Interactivo",
                          navbarMenu("Proyecto",
                                     tabPanel("Resumen",
