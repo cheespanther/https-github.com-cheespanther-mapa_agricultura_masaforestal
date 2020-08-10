@@ -314,7 +314,8 @@ function(input, output, session) {
     if (input$leyenda) {
       proxy %>% 
         addLegend("topleft", group = "Autocorrelación pérdida", pal = pal, values = ~as.numeric(LISA_CL), opacity = 1.0) %>%
-        addLegend("topleft", group = "Autocorrelación degradación", pal = pal, values = ~as.numeric(LISA_CLdeg), opacity = 1.0)
+        addLegend("topleft", group = "Autocorrelación degradación", pal = pal, values = ~as.numeric(LISA_CLdeg), opacity = 1.0) %>%
+        addLegend("topleft", group = "Autocorrelación deforestación", pal = pal, values = ~as.numeric(LISA_CLdef), opacity = 1.0)
     }
   })  
 }

@@ -1,22 +1,8 @@
 bootstrapPage(theme = shinytheme("flatly"),
-              
-              navbarPage("Mapa Interactivo",
-                         navbarMenu("Proyecto",
-                                    tabPanel("Resumen",
-                                             includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/resumen.html")
-                                    ),
-                                    tabPanel("Introducción",
-                                             includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/introduccion.html")
-                                    ),
-                                    tabPanel("Justificación",
-                                             h4("Justificación:"),
-                                             includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/justificacion.html"),
-                                             plotOutput('grafica1'),),
-                                    tabPanel("Acerca de este sitio",
-                                             includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/acerca_de.html"))
-                         ),
-                         tabPanel("Mapa",
-                                  basicPage("Mapa Interactivo",
+              navbarPage("Mapa MIC",
+                         
+                         tabPanel("Mapa interactivo",
+                                  basicPage("Mapa interactio",
                                             tags$style(type = "text/css", "html, body {width:100%;height:100%}",
                                                        ".leaflet .legend {
                                                        line-height: 10px;
@@ -70,6 +56,7 @@ bootstrapPage(theme = shinytheme("flatly"),
                                              ),
                                              DT::dataTableOutput("tabla1"),
                                     ),
+                                    
                                     tabPanel("Producción agrícola 2016",
                                              h2("Visualización de datos agrícolas del 2016"),
                                              fluidRow(
@@ -107,6 +94,7 @@ bootstrapPage(theme = shinytheme("flatly"),
                                              ),
                                              DT::dataTableOutput("tabla3"),
                                     ),
+                                    
                                     tabPanel("Datos comparables 2007 - 2016",
                                              h2("Cambios por área de control"),
                                              ("NOTA: Datos completos solo para el Municipio Marqués de Comillas."),
@@ -139,13 +127,26 @@ bootstrapPage(theme = shinytheme("flatly"),
                                       selectInput('xcol', 'Variable X', vars),
                                       selectInput('ycol', 'Variable Y', vars, selected = vars[[2]]),
                                       selectInput('tamano', 'Tamaño', vars, selected = vars[[3]]),
-                                      
-                                      h2("Descripción de los")
                                     ),
                                     mainPanel(
                                       plotOutput('plot1')
                                     )
                                   )                                    
+                         ),
+                         
+                         navbarMenu("Proyecto",
+                                    tabPanel("Resumen",
+                                             includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/resumen.html")
+                                    ),
+                                    tabPanel("Introducción",
+                                             includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/introduccion.html")
+                                    ),
+                                    tabPanel("Justificación",
+                                             h4("Justificación:"),
+                                             includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/justificacion.html"),
+                                             plotOutput('grafica1'),),
+                                    tabPanel("Acerca de este sitio",
+                                             includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/acerca_de.html"))
                          )
                          
               )

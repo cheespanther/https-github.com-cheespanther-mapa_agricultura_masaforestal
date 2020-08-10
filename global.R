@@ -39,7 +39,7 @@ bins_autocorr <- c(0,1,2,3,4)
 
 # PALETA DE COLORES
 
-pal <- colorNumeric(c("white", "red", "blue", "green", "grey"), 0:4)
+pal <- colorFactor(c("white", "red", "blue", "green", "grey"), 0:4)
 palb <- colorFactor( palette="Spectral", 1:7)
 
 pal_0 <- colorBin( palette="viridis", domain = ac_mapa_mc$TERRENOS, bins = bins_terrenos_tot)
