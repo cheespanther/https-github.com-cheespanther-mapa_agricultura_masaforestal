@@ -276,7 +276,6 @@ function(input, output, session) {
     
   })
   
-  
   observeEvent(input$mapa_shape_click, {
     
     #create object for clicked polygon
@@ -285,7 +284,6 @@ function(input, output, session) {
     print(click)
     
   }) #END OBSERVE EVENT
-  
   
   # LOS PROXIES PERMITEN ENCENDER Y APAGAR ELEMENTOS EN R LEAFLET
   observe({
