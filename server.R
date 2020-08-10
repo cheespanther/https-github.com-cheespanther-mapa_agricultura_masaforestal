@@ -138,6 +138,8 @@ function(input, output, session) {
       addMapPane("G", zIndex = 430) %>% # 
       addMapPane("H", zIndex = 420) %>% # 
       addMapPane("I", zIndex = 410) %>% # 
+      addMapPane("J", zIndex = 410) %>% # 
+      
       
       addTiles(group = "Open Street Map") %>%
       addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
@@ -253,38 +255,36 @@ function(input, output, session) {
                             dashArray = "1",
                             group = "Autocorrelación deforestación")
     
-    # CAPA DE CAMBIOS DE NDVI
-    m <- m %>%  addPolygons(data = cambios_usv_forestal, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+
+    
+    # CAPAS DE SERIES
+    m <- m %>%  addPolygons(data = serie_3, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "H"),
-                            fillColor = ~pal_7(as.numeric(gridcode)),
-                            group = "Cambios forestal")
+                            fillColor = ~palb(as.numeric(VALOR)),
+                            group = "Serie 3")
+    
+    m <- m %>%  addPolygons(data = serie_6, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                            options = pathOptions(pane = "I"),
+                            fillColor = ~palb(as.numeric(VALOR)),
+                            group = "Serie 6")
     
     # CAPA DE CAMBIOS DE USO DE SUELO
     m <- m %>%  addPolygons(data = cambios_usv, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            options = pathOptions(pane = "I"),
+                            options = pathOptions(pane = "J"),
                             fillColor = ~pal_8(as.numeric(gridcode)),
                             group = "Cambios USV")
     
     # CONTROL DE CAPAS
     m <- m %>% addLayersControl(
       baseGroups = c("Open Street Map", "Toner", "Toner Lite"),
-      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación"),
+      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación", "Serie 3", "Serie 6"),
       options = layersControlOptions(collapsed = FALSE)
     )
     
     m
     
   })
-  
-  observeEvent(input$mapa_shape_click, {
-    
-    #create object for clicked polygon
-    click <- input$mapa_shape_click
-    
-    print(click)
-    
-  }) #END OBSERVE EVENT
-  
+   
   # LOS PROXIES PERMITEN ENCENDER Y APAGAR ELEMENTOS EN R LEAFLET
   observe({
     proxy <- leafletProxy("mapa", data = ac_mapa_mc)

@@ -146,7 +146,7 @@ bootstrapPage(theme = shinytheme("flatly"),
                                       plotOutput('plot1')
                                     )
                                   )                                    
-                                  )
+                         )
                          
               )
               
