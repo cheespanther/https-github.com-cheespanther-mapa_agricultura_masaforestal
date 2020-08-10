@@ -91,7 +91,6 @@ function(input, output, session) {
   
   # VISUALIZACIÓN DE DATOS 3
   
-  
   output$tabla5 <- DT::renderDataTable(
     DT::datatable(df_correlacion_pearson, options = list(paging = FALSE))
   )
@@ -130,14 +129,15 @@ function(input, output, session) {
   output$mapa <- renderLeaflet({
     
     m <-leaflet(ac_mapa_mc) %>%
-      addMapPane("A", zIndex = 440) %>% #
-      addMapPane("B", zIndex = 430) %>% # 
-      addMapPane("C", zIndex = 420) %>% # 
-      addMapPane("D", zIndex = 410) %>% # 
-      addMapPane("E", zIndex = 410) %>% #
-      addMapPane("F", zIndex = 400) %>% # 
-      addMapPane("G", zIndex = 390) %>% # 
-      
+      addMapPane("A", zIndex = 490) %>% #
+      addMapPane("B", zIndex = 480) %>% # 
+      addMapPane("C", zIndex = 470) %>% # 
+      addMapPane("D", zIndex = 460) %>% # 
+      addMapPane("E", zIndex = 450) %>% #
+      addMapPane("F", zIndex = 440) %>% # 
+      addMapPane("G", zIndex = 430) %>% # 
+      addMapPane("H", zIndex = 420) %>% # 
+      addMapPane("I", zIndex = 410) %>% # 
       
       addTiles(group = "Open Street Map") %>%
       addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
@@ -228,32 +228,49 @@ function(input, output, session) {
                               direction = "auto"),
                             popup = ~pop_pecuario)
     
-    # CAPA DE AUTOCORRELACIÓN DE LA DEFORESTACIÓN
-    m <- m %>%  addPolygons(data = autocorr_deforestacion, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+    # CAPAS DE AUTOCORRELACIÓN
+    m <- m %>%  addPolygons(data = autocorr_deforestacion, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "E"),
-                            fillColor = ~pal_0(LISA_CL),
+                            fillColor = ~pal(LISA_CL),
+                            weight = 1,
+                            opacity = 0.1,
+                            dashArray = "1",
+                            group = "Autocorrelación pérdida")
+    
+    m <- m %>%  addPolygons(data = autocorr_deforestacion, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
+                            options = pathOptions(pane = "F"),
+                            fillColor = ~pal(LISA_CLdeg),
+                            weight = 1,
+                            opacity = 0.1,
+                            dashArray = "1",
+                            group = "Autocorrelación degradación")
+    
+    m <- m %>%  addPolygons(data = autocorr_deforestacion, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
+                            options = pathOptions(pane = "G"),
+                            fillColor = ~pal(LISA_CLdef),
+                            weight = 1,
+                            opacity = 0.1,
+                            dashArray = "1",
                             group = "Autocorrelación deforestación")
     
     # CAPA DE CAMBIOS DE NDVI
     m <- m %>%  addPolygons(data = cambios_usv_forestal, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            options = pathOptions(pane = "F"),
+                            options = pathOptions(pane = "H"),
                             fillColor = ~pal_7(as.numeric(gridcode)),
                             group = "Cambios forestal")
     
     # CAPA DE CAMBIOS DE USO DE SUELO
     m <- m %>%  addPolygons(data = cambios_usv, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                            options = pathOptions(pane = "G"),
+                            options = pathOptions(pane = "I"),
                             fillColor = ~pal_8(as.numeric(gridcode)),
                             group = "Cambios USV")
     
-    
     cambios_usv_total
-    
     
     # CONTROL DE CAPAS
     m <- m %>% addLayersControl(
       baseGroups = c("Open Street Map", "Toner", "Toner Lite"),
-      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación deforestación", "Cambios forestal", "Cambios USV"),
+      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación"),
       options = layersControlOptions(collapsed = FALSE)
     )
     
@@ -280,7 +297,18 @@ function(input, output, session) {
     if (input$leyenda) {
       proxy %>% 
         addLegend("topleft", group = "Cambios forestal", pal = pal_7, values = ~as.numeric(gridcode), opacity = 1.0) %>%
+        addLegend("topleft", group = "Cambios forestal", pal = pal_7, values = ~as.numeric(gridcode), opacity = 1.0) %>%
         addLegend("topleft", group = "Cambios USV", pal = pal_8, values = ~as.numeric(gridcode), opacity = 1.0)
+    }
+  })
+  
+  observe({
+    proxy <- leafletProxy("mapa", data = autocorr_deforestacion)
+    proxy %>% clearControls()
+    if (input$leyenda) {
+      proxy %>% 
+        addLegend("topleft", group = "Autocorrelación pérdida", pal = pal, values = ~as.numeric(LISA_CL), opacity = 1.0) %>%
+        addLegend("topleft", group = "Autocorrelación degradación", pal = pal, values = ~as.numeric(LISA_CLdeg), opacity = 1.0)
     }
   })  
 }
