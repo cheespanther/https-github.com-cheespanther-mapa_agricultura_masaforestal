@@ -62,8 +62,8 @@ cambio_usv <- import('https://raw.githubusercontent.com/iskarwaluyo/mapa_agricul
 # PROCESAMIENTO DE LOS DATOS
 
 # CÁLCULO Y CONCATENACIÓN SUMAS POR ÁREA DE CONTROL DE TAMAÑO PROMEDIO DE LOS TERRENOS REGISTRADOS TOTALES Y CON SUPERFICIE SEMBRADA
-concentrado16$TERRENO_PROM_TOT <- as.numeric(as.character(concentrado16$SUP_TOTAL))/as.numeric(as.character(concentrado16$TERRENOS))
-concentrado16$TERRENO_PROM_SEM <- as.numeric(as.character(concentrado16$SUP_CARTO))/as.numeric(as.character(concentrado16$NUM_TERR))
+concentrado16$TERRENO_PROM_TOT <- as.numeric(as.character(concentrado16SUP_CARTO))/as.numeric(as.character(concentrado16$TERRENOS))
+concentrado16$TERRENO_PROM_SEM <- as.numeric(as.character(concentrado16$SUP_SEMB))/as.numeric(as.character(concentrado16$NUM_TERR))
 concentrado16$PCT_SUPSEM <- 100*as.numeric(as.character(concentrado16$SUP_SEMB)) / as.numeric(as.character(concentrado16$SUP_TOTAL))
 concentrado16$PCT_SUPSEM_ACTIVA <- 100*as.numeric(as.character(concentrado16$PCT_SUPSEM)) / as.numeric(as.character(concentrado16$SUP_TOTAL))
 concentrado16$CULTI_ESPE <- gsub('CAFE CIMARRON', 'CAFE', concentrado16$CULTI_ESPE)

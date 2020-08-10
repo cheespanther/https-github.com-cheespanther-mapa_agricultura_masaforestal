@@ -265,8 +265,6 @@ function(input, output, session) {
                             fillColor = ~pal_8(as.numeric(gridcode)),
                             group = "Cambios USV")
     
-    cambios_usv_total
-    
     # CONTROL DE CAPAS
     m <- m %>% addLayersControl(
       baseGroups = c("Open Street Map", "Toner", "Toner Lite"),
@@ -277,6 +275,17 @@ function(input, output, session) {
     m
     
   })
+  
+  
+  observeEvent(input$mapa_shape_click, {
+    
+    #create object for clicked polygon
+    click <- input$mapa_shape_click
+    
+    print(click)
+    
+  }) #END OBSERVE EVENT
+  
   
   # LOS PROXIES PERMITEN ENCENDER Y APAGAR ELEMENTOS EN R LEAFLET
   observe({
@@ -296,7 +305,6 @@ function(input, output, session) {
     proxy %>% clearControls()
     if (input$leyenda) {
       proxy %>% 
-        addLegend("topleft", group = "Cambios forestal", pal = pal_7, values = ~as.numeric(gridcode), opacity = 1.0) %>%
         addLegend("topleft", group = "Cambios forestal", pal = pal_7, values = ~as.numeric(gridcode), opacity = 1.0) %>%
         addLegend("topleft", group = "Cambios USV", pal = pal_8, values = ~as.numeric(gridcode), opacity = 1.0)
     }
