@@ -24,6 +24,7 @@ ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CV
 
 ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
 
+autocorr_1 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr_1.geojson")
 autocorr_deforestacion <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr_deforestacion.geojson")
 serie_3 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_3.geojson")
 serie_6 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_6.geojson")
@@ -174,7 +175,7 @@ save(df_ac_16, df_ac_07, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado_ac, comparado_esp, casos_comparables_ac, casos_comparables_esp, sum_comparables_ac, sum_comparables_esp, file = "comparados.RData")
 save(df_correlacion, df_correlacion_mc, matriz_correlacion, df_correlacion_pearson, df_correlacion_pearson_melt, file = "correlaciones.RData")
-save(autocorr_deforestacion, file = "autocorrelaciones.RData")
+save(autocorr_deforestacion, autocorr_1, file = "autocorrelaciones.RData")
 save(cambios_ndvi, cambios_usv, cambios_usv_forestal, cambios_usv_total, file = "cambios.RData")
 
 # REGRESAR AL ENTORNO GENERAL LOCAL
