@@ -38,8 +38,8 @@ bins_autocorr <- c(0,1,2,3,4)
 
 # PALETA DE COLORES
 
-pal <- colorNumeric(c("white", "red", "blue", "green", "grey"), 0:4)
-
+pal_0 <- colorBin( palette="viridis", domain = ac_mapa_mc$TERRENOS, bins = bins_terrenos_tot)
+  
 pal_0a <- colorBin( palette="Set1", domain = autocorr_deforestacion$LISA_CL, bins = bins_autocorr)
 pal_0b <- colorBin( palette="Set1", domain = autocorr_deforestacion$LISA_CLdef, bins = bins_autocorr)
 pal_0c <- colorBin( palette="Set1", domain = autocorr_deforestacion$LISA_CLdeg, bins = bins_autocorr)
