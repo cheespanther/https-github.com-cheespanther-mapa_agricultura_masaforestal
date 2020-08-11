@@ -13,6 +13,7 @@ library(raster)
 library(corrplot)
 library(reshape2)
 library(ggcorrplot)
+library(rgeos)
 
 # LECTURA DE SHAPE BASE DE ÁREAS DE CONTROL DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
@@ -32,6 +33,9 @@ cambios_ndvi <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agri
 cambios_usv <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv.geojson")
 cambios_usv_forestal <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_forestal.geojson")
 cambios_usv_total <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_total.geojson")
+cambios_usv_final <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_final.geojson")
+cambios_csv_final_ac <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_final_ac.csv")
+
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN PECUARIAS DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
@@ -176,73 +180,7 @@ save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado_ac, comparado_esp, casos_comparables_ac, casos_comparables_esp, sum_comparables_ac, sum_comparables_esp, file = "comparados.RData")
 save(df_correlacion, df_correlacion_mc, matriz_correlacion, df_correlacion_pearson, df_correlacion_pearson_melt, file = "correlaciones.RData")
 save(autocorr_deforestacion, autocorr_1, file = "autocorrelaciones.RData")
-save(cambios_ndvi, cambios_usv, cambios_usv_forestal, cambios_usv_total, file = "cambios.RData")
+save(cambios_ndvi, cambios_usv, cambios_usv_forestal, cambios_usv_total, cambios_usv_final, cambios_csv_final_ac, file = "cambios.RData")
 
 # REGRESAR AL ENTORNO GENERAL LOCAL
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal")
-
-ggcorrplot(df_correlacion_pearson,
-           hc.order = TRUE,
-           type = "lower",
-           outline.color = "white",
-           lab = FALSE)
-
-ggheatmap <- ggplot(melted_cormat, aes(Var1, Var2, fill = value))+
-  geom_tile(color = "white")+
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
-                       midpoint = 0, limit = c(-1,1), space = "Lab", 
-                       name="Pearson\nCorrelation") +
-  theme_minimal()+ # minimal theme
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
-                                   size = 12, hjust = 1))+
-  coord_fixed()
-# Print the heatmap
-print(ggheatmap)
-
-ggheatmap + 
-  geom_text(aes(Var1, Var2, label = value), color = "black", size = 4) +
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.grid.major = element_blank(),
-    panel.border = element_blank(),
-    panel.background = element_blank(),
-    axis.ticks = element_blank(),
-    legend.justification = c(1, 0),
-    legend.position = c(0.6, 0.7),
-    legend.direction = "horizontal")+
-  guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
-                               title.position = "top", title.hjust = 0.5))
-
-library(GGally)
-
-# Create data 
-data <- matriz_correlacion
-
-# Check correlations (as scatterplots), distribution and print corrleation coefficient 
-ggpairs(data, title="correlogram with ggpairs()") 
-
-# AUTOCORRELACIÓN
-library(spdep)
-contiguidad <- poly2nb(ac_mapa_mc, queen=TRUE)
-pesos <- nb2listw(contiguidad, style="W", zero.policy=TRUE)
-
-inc.lag <- lag.listw(pesos, ac_mapa_mc$DEFORESTADA)
-plot(inc.lag ~ ac_mapa_mc$DEFORESTADA, pch=16, asp=1)
-M1 <- lm(inc.lag ~ ac_mapa_mc$DEFORESTADA)
-abline(M1, col="blue")
-
-I <- moran(ac_mapa_mc$DEFORESTADA, pesos, length(contiguidad), Szero(pesos))[1]
-
-grid <- raster(extent(ac_mapa_mc), resolution = c(200,200))
-grid <- raster::extend(grid, c(1,1))
-
-# convert to SpatialPolygonsDataFrame
-class(gridPolygon)
-
-gridPolygon <- rasterToPolygons(grid)
-plot(ac_mapa_mc)
-plot(gridPolygon, add = T)
-
-grid <- makegrid(ac_mapa_mc, cellsize = 0.1)
-grid <- SpatialPoints(grid)
