@@ -17,6 +17,7 @@ library(rgeos)
 
 # LECTURA DE SHAPE BASE DE ÁREAS DE CONTROL DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
+
 ac_mapa <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/ac_mapa.geojson")
 colnames(ac_mapa@data) <- toupper(colnames(ac_mapa@data)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
 ac_mapa@data$NOM_ENT <- toupper(ac_mapa@data$NOM_ENT) # CONVERTIR TODOS LOS NOMBRES DE ENTIDADES A MAYUSCULAS
@@ -25,7 +26,7 @@ ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CV
 
 ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
 
-autocorr_1 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr_1.geojson")
+autocorr <- readOGR("http://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/shp_finales/autocorrelacion.geojson")
 autocorr_deforestacion <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr_deforestacion.geojson")
 serie_3 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_3.geojson")
 serie_6 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_6.geojson")
