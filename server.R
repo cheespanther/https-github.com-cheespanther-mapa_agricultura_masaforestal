@@ -117,7 +117,12 @@ function(input, output, session) {
     data <- matriz_correlacion
     ggplot(data, aes(x=selectedData1(), y=selectedData2(), size = selectedData3())) +
       geom_point(alpha=0.7) +
-      geom_smooth(method='lm')
+      stat_smooth(aes(fill = group, color = group), method = "lm", formula = formula) +
+      stat_regline_equation(
+        aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),
+        formula = formula
+      )
+      
   })
   
   # GENERAR GRÁFICAS

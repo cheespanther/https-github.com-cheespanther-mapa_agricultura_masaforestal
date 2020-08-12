@@ -26,17 +26,10 @@ ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CV
 
 ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
 
-autocorr <- readOGR("http://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/shp_finales/autocorrelacion.geojson")
-autocorr_deforestacion <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorr_deforestacion.geojson")
+autocorr <- readOGR("http://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorrelacion.geojson")
 serie_3 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_3.geojson")
 serie_6 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_6.geojson")
-cambios_ndvi <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_ndvi.geojson")
-cambios_usv <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv.geojson")
-cambios_usv_forestal <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_forestal.geojson")
-cambios_usv_total <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_total.geojson")
-cambios_usv_final <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_final.geojson")
-cambios_csv_final_ac <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_final_ac.csv")
-
+cambios_usv <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_final.geojson")
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN PECUARIAS DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
@@ -59,11 +52,6 @@ colnames(concentrado16) <- toupper(colnames(concentrado16)) # CONVERTIR TODOS LO
 # FUENTE: ELABORACIÓN PROPIA CON DATOS DEL INEGI
 datos_cambios <- import("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_2.csv")
 colnames(datos_cambios) <- toupper(colnames(datos_cambios)) # CONVERTIR TODOS LOS ENCABEZADOS A MAYUSCULAS
-
-# LECTURA DE DATOS DE LOS CAMBIOS DE USO DE SUELO Y VEGETACIÓN SERIE III Y SERIE VI
-# FUENTE: INEGI
-cambio_usv <- import('https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/control_selva.csv')
-
 
 # PROCESAMIENTO DE LOS DATOS
 
@@ -111,11 +99,8 @@ colnames(concentrado07) <- paste(colnames(concentrado07), "_07", sep="")
 concentrado07$UP_PROM_TOTAL <- as.numeric(as.character(concentrado07$SUP_SC_07))/as.numeric(as.character(concentrado07$UP_07))
 concentrado07$UP_PROM_SEMB <- as.numeric(as.character(concentrado07$SUP_SEMB_07))/as.numeric(as.character(concentrado07$UP_07))
 concentrado07$CULTI_ESPE<- laply(concentrado07$CULTI_ESPE_07, toupper) # CONVERTIR TODOS LOS VALORES A MAYUSCULAS
-
-# UNIFICAR Y AGRUPAR ID'S DE CULTIVOS 
-concentrado07$CULTI_ESPE <- gsub('MAIZ GRANO', 'MAIZ', concentrado07$CULTI_ESPE)
 concentrado07$CONCAT_ESPE <- paste(concentrado07$CVE_CONCAT, concentrado07$CULTI_ESPE, sep="_")
-
+ 
 esp_sum07 <- ddply(concentrado07, .(CONCAT_ESPE), numcolwise(sum))
 esp_sum07$CVE_CONCAT <- substr(esp_sum07$CONCAT_ESPE, 1, 13)
 esp_sum07$CULTI_ESPE <- substr(esp_sum07$CONCAT_ESPE, 15, length(esp_sum07$CVE_CONCAT))
@@ -180,8 +165,8 @@ save(df_ac_16, df_ac_07, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado_ac, comparado_esp, casos_comparables_ac, casos_comparables_esp, sum_comparables_ac, sum_comparables_esp, file = "comparados.RData")
 save(df_correlacion, df_correlacion_mc, matriz_correlacion, df_correlacion_pearson, df_correlacion_pearson_melt, file = "correlaciones.RData")
-save(autocorr_deforestacion, autocorr_1, file = "autocorrelaciones.RData")
-save(cambios_ndvi, cambios_usv, cambios_usv_forestal, cambios_usv_total, cambios_usv_final, cambios_csv_final_ac, file = "cambios.RData")
+save(autocorr, file = "autocorrelaciones.RData")
+save(cambios_usv, file = "cambios.RData")
 
 # REGRESAR AL ENTORNO GENERAL LOCAL
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal")

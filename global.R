@@ -22,6 +22,9 @@ library(reshape2)
 library(ggcorrplot)
 library(colorspace)
 library(revealjs)
+library(ggpmisc)
+library(magrittr)
+
 
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/carto.RData"))
 load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/Rdata/concentrados.RData"))
