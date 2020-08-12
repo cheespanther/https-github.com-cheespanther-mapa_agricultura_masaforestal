@@ -24,12 +24,15 @@ ac_mapa@data$NOM_ENT <- toupper(ac_mapa@data$NOM_ENT) # CONVERTIR TODOS LOS NOMB
 ac_mapa@data$NOM_MUN <- toupper(ac_mapa@data$NOM_MUN) # CONVERTIR TODOS LOS NOMBRES DE MUNICIPIO A MAYUSCULAS
 ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CVE_AGEB, ac_mapa@data$CVE_MZA, sep="_"))
 
-ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
+# ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
+
+ac_mapa_mc <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/ac_mc.geojson")
 
 autocorr <- readOGR("http://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorrelacion.geojson")
 serie_3 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_3.geojson")
 serie_6 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_6.geojson")
 cambios_usv <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_final.geojson")
+cambios_usv_ac <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_ac.geojson")
 
 # LECTURA DE DATOS DE LA PRODUCCIÓN PECUARIAS DE GITHUB
 # FUENTE: ACTUALIZACIÓN DEL MARCO SENSAL AGROPECUARIO 2016
@@ -141,8 +144,6 @@ sum_comparables_ac$CAMBIO_SUP_SEMB_AGRICOLA_PCT <- as.numeric(as.character(sum_c
 ac_mapa_b <- merge(ac_mapa, sum_comparables_ac[,c(1, 9:32)], by = "CVE_CONCAT", all.y=TRUE, all.x = TRUE)
 ac_mapa_b <- merge(ac_mapa_b, datos_cambios, by.x = "CONTROL", by.y = "ETIQUETAS DE FILA")
 ac_mapa_b <- merge(ac_mapa_b, df_ac_16[,c(2,11,12,14,13,22,23,24,25)], by = "CONTROL")
-
-ac_mapa_mc <- subset(ac_mapa_b, ac_mapa_b$NOM_MUN == "MARQUÉS DE COMILLAS")
 
 ########### CONTROL
 # CORRELACIÓN DE DATOS
