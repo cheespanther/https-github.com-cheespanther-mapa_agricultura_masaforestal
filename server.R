@@ -236,7 +236,7 @@ function(input, output, session) {
                             popup = ~pop_pecuario)
     
     # CAPAS DE AUTOCORRELACIÓN
-    m <- m %>%  addPolygons(data = autocorr_deforestacion, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
+    m <- m %>%  addPolygons(data = autocorr, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "E"),
                             fillColor = ~pal(LISA_CL),
                             weight = 1,
@@ -244,7 +244,7 @@ function(input, output, session) {
                             dashArray = "1",
                             group = "Autocorrelación pérdida")
     
-    m <- m %>%  addPolygons(data = autocorr_deforestacion, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
+    m <- m %>%  addPolygons(data = autocorr, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "F"),
                             fillColor = ~pal(LISA_CLdeg),
                             weight = 1,
@@ -252,7 +252,7 @@ function(input, output, session) {
                             dashArray = "1",
                             group = "Autocorrelación degradación")
     
-    m <- m %>%  addPolygons(data = autocorr_deforestacion, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
+    m <- m %>%  addPolygons(data = autocorr, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "G"),
                             fillColor = ~pal(LISA_CLdef),
                             weight = 1,
