@@ -273,7 +273,7 @@ function(input, output, session) {
     # CAPA DE CAMBIOS DE USO DE SUELO
     m <- m %>%  addPolygons(data = cambios_usv, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "J"),
-                            fillColor = ~pal_8(as.numeric(gridcode)),
+                            fillColor = ~pal_8(as.numeric(Valor_C)),
                             group = "Cambios USV")
     
     # CONTROL DE CAPAS
@@ -301,17 +301,17 @@ function(input, output, session) {
   })
   
   observe({
-    proxy <- leafletProxy("mapa", data = cambios_ndvi)
+    proxy <- leafletProxy("mapa", data = cambios_usv)
     proxy %>% clearControls()
     if (input$leyenda) {
       proxy %>% 
-        addLegend("topleft", group = "Cambios forestal", pal = pal_7, values = ~as.numeric(gridcode), opacity = 1.0) %>%
-        addLegend("topleft", group = "Cambios USV", pal = pal_8, values = ~as.numeric(gridcode), opacity = 1.0)
+        addLegend("topleft", group = "Cambios forestal", pal = pal_8, values = ~as.numeric(Valor_C), opacity = 1.0) %>%
+        addLegend("topleft", group = "Cambios USV", pal = pal_8, values = ~as.numeric(Valor_C), opacity = 1.0)
     }
   })
   
   observe({
-    proxy <- leafletProxy("mapa", data = autocorr_deforestacion)
+    proxy <- leafletProxy("mapa", data = autocorr)
     proxy %>% clearControls()
     if (input$leyenda) {
       proxy %>% 
