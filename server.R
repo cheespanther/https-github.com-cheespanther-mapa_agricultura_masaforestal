@@ -145,7 +145,6 @@ function(input, output, session) {
       addMapPane("I", zIndex = 410) %>% # 
       addMapPane("J", zIndex = 410) %>% # 
       
-      
       addTiles(group = "Open Street Map") %>%
       addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
       addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite")
@@ -259,8 +258,6 @@ function(input, output, session) {
                             opacity = 0.1,
                             dashArray = "1",
                             group = "Autocorrelación deforestación")
-    
-
     
     # CAPAS DE SERIES
     m <- m %>%  addPolygons(data = serie_3, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
