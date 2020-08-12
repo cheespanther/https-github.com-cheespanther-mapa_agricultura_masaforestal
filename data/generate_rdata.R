@@ -26,7 +26,8 @@ ac_mapa@data$CVE_CONCAT <- as.factor(paste(ac_mapa@data$CVE_MUN, ac_mapa@data$CV
 
 # ac_mapa <- ms_simplify(ac_mapa, keep = 0.05)
 
-ac_mapa_mc <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/ac_mc.geojson")
+cambios_usv_ac <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/cambios_usv_ac.geojson")
+
 
 autocorr <- readOGR("http://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/autocorrelacion.geojson")
 serie_3 <- readOGR("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/data/raw_data/serie_3.geojson")
@@ -145,6 +146,8 @@ ac_mapa_b <- merge(ac_mapa, sum_comparables_ac[,c(1, 9:32)], by = "CVE_CONCAT", 
 ac_mapa_b <- merge(ac_mapa_b, datos_cambios, by.x = "CONTROL", by.y = "ETIQUETAS DE FILA")
 ac_mapa_b <- merge(ac_mapa_b, df_ac_16[,c(2,11,12,14,13,22,23,24,25)], by = "CONTROL")
 
+ac_mapa_mc <- subset(ac_mapa_b, ac_mapa_b$NOM_MUN == "MARQUÉS DE COMILLAS")
+
 ########### CONTROL
 # CORRELACIÓN DE DATOS
 df_correlacion <- as.data.frame(ac_mapa_b)
@@ -167,7 +170,7 @@ save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado_ac, comparado_esp, casos_comparables_ac, casos_comparables_esp, sum_comparables_ac, sum_comparables_esp, file = "comparados.RData")
 save(df_correlacion, df_correlacion_mc, matriz_correlacion, df_correlacion_pearson, df_correlacion_pearson_melt, file = "correlaciones.RData")
 save(autocorr, file = "autocorrelaciones.RData")
-save(cambios_usv, file = "cambios.RData")
+save(cambios_usv, cambios_usv_ac, file = "cambios.RData")
 
 # REGRESAR AL ENTORNO GENERAL LOCAL
 setwd("/media/iskar/archivosB/PROYECTOS/PROYECTO_ESP_CENTROGEO_3.0/mapa_agricultura_masaforestal")
