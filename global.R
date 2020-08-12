@@ -36,7 +36,7 @@ load(url("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masafor
 
 bins_terrenos_tot <- c(0, 10, 20, 50, 100, 150, 200, Inf)
 bins_series <- c(1, 2, 3, 4, 5, 6, 7)
-bins_cambios <- c(1, 2, 3, 4)
+bins_cambios <- c(1:42)
 bins_pct <- c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
 bins_autocorr <- c(0,1,2,3,4)
 
@@ -51,14 +51,14 @@ pal_0a <- colorBin( palette="Set1", domain = autocorr$LISA_CL, bins = bins_autoc
 pal_0b <- colorBin( palette="Set1", domain = autocorr$LISA_CLdef, bins = bins_autocorr)
 pal_0c <- colorBin( palette="Set1", domain = autocorr$LISA_CLdeg, bins = bins_autocorr)
 
-pal_1 <- colorBin( palette="viridis", domain = as.numeric(as.character(ac_mapa@data$TERRENOS)), bins = bins_terrenos_tot)
+pal_1 <- colorBin( palette="magma", domain = as.numeric(as.character(ac_mapa@data$TERRENOS)), bins = bins_terrenos_tot)
 pal_2 <- colorNumeric( palette= "YlGn", domain=ac_mapa@data$PCT_FORESTAL, na.color="transparent")
 pal_3 <- colorNumeric( palette="YlOrBr", domain=ac_mapa@data$PCT_AGRICOLA, na.color="transparent")
 pal_4 <- colorNumeric( palette="YlOrRd", domain=ac_mapa@data$PCT_PECUARIO, na.color="transparent")
 pal_5 <- colorBin( palette="Spectral", domain = as.numeric(as.character(serie_3@data$VALOR)), bins = bins_series)
 pal_6 <- colorBin( palette="Spectral", domain = as.numeric(as.character(serie_6@data$VALOR)), bins = bins_series)
 # pal_7 <- colorBin( palette="Spectral", domain = as.numeric(as.character(cambios_ndvi@data$gridcode)), bins = bins_cambios) 
-pal_8 <- colorBin( palette="Spectral", domain = as.numeric(as.character(cambios_usv@data$Valor_C)), bins = bins_cambios)
+pal_8 <- colorFactor( palette="Spectral", domain = cambios_usv@data$tipo_cambi)
 
 # k-means only works with numerical variables,
 # so don't give the user the option to select

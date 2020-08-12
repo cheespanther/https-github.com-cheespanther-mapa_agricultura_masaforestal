@@ -117,12 +117,8 @@ function(input, output, session) {
     data <- matriz_correlacion
     ggplot(data, aes(x=selectedData1(), y=selectedData2(), size = selectedData3())) +
       geom_point(alpha=0.7) +
-      stat_smooth(aes(fill = group, color = group), method = "lm", formula = formula) +
-      stat_regline_equation(
-        aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),
-        formula = formula
-      )
-      
+      geom_smooth(method=lm, se=FALSE, linetype="dashed",
+                  color="darkred")
   })
   
   # GENERAR GRÁFICAS
@@ -273,13 +269,13 @@ function(input, output, session) {
     # CAPA DE CAMBIOS DE USO DE SUELO
     m <- m %>%  addPolygons(data = cambios_usv, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "J"),
-                            fillColor = ~pal_8(as.numeric(Valor_C)),
+                            fillColor = ~pal_8(tipo_cambi),
                             group = "Cambios USV")
     
     # CONTROL DE CAPAS
     m <- m %>% addLayersControl(
       baseGroups = c("Open Street Map", "Toner", "Toner Lite"),
-      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación", "Serie 3", "Serie 6"),
+      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación", "Serie 3", "Serie 6", "Cambios USV"),
       options = layersControlOptions(collapsed = FALSE)
     )
     
@@ -301,16 +297,6 @@ function(input, output, session) {
   })
   
   observe({
-    proxy <- leafletProxy("mapa", data = cambios_usv)
-    proxy %>% clearControls()
-    if (input$leyenda) {
-      proxy %>% 
-        addLegend("topleft", group = "Cambios forestal", pal = pal_8, values = ~as.numeric(Valor_C), opacity = 1.0) %>%
-        addLegend("topleft", group = "Cambios USV", pal = pal_8, values = ~as.numeric(Valor_C), opacity = 1.0)
-    }
-  })
-  
-  observe({
     proxy <- leafletProxy("mapa", data = autocorr)
     proxy %>% clearControls()
     if (input$leyenda) {
@@ -320,4 +306,33 @@ function(input, output, session) {
         addLegend("topleft", group = "Autocorrelación deforestación", pal = pal, values = ~as.numeric(LISA_CLdef), opacity = 1.0)
     }
   })  
+  
+  observe({
+    proxy <- leafletProxy("mapa", data = cambios_usv)
+    proxy %>% clearControls()
+    if (input$leyenda) {
+      proxy %>% 
+        addLegend("topleft", group = "Cambios USV", pal = pal_8, values = ~tipo_cambi, opacity = 1.0)
+    }
+  })
+  
+  observe({
+    proxy <- leafletProxy("mapa", data = serie_3)
+    proxy %>% clearControls()
+    if (input$leyenda) {
+      proxy %>% 
+        addLegend("topleft", group = "Serie 3", pal = pal_5, values = ~as.numeric(VALOR), opacity = 1.0)
+    }
+  })
+  
+  observe({
+    proxy <- leafletProxy("mapa", data = serie_6)
+    proxy %>% clearControls()
+    if (input$leyenda) {
+      proxy %>% 
+        addLegend("topleft", group = "Serie 6", pal = pal_6, values = ~as.numeric(VALOR), opacity = 1.0)
+    }
+  })
+  
+
 }

@@ -1,8 +1,8 @@
 bootstrapPage(theme = shinytheme("flatly"),
-              navbarPage("Mapa MIC",
+              navbarPage("MICAF",
                          
-                         tabPanel("Mapa interactivo",
-                                  basicPage("Mapa interactio",
+                         tabPanel("Mapa",
+                                  basicPage("Mapa Interactivo de la Correlación entre la actividad Agropecuaria y el cambio de la superficie Forestal",
                                             tags$style(type = "text/css", "html, body {width:100%;height:100%}",
                                                        ".leaflet .legend {
                                                        line-height: 10px;
