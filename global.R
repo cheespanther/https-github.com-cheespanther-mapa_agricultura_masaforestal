@@ -55,8 +55,8 @@ pal_1 <- colorBin( palette="magma", domain = as.numeric(as.character(ac_mapa@dat
 pal_2 <- colorNumeric( palette= "YlGn", domain=ac_mapa@data$PCT_FORESTAL, na.color="transparent")
 pal_3 <- colorNumeric( palette="YlOrBr", domain=ac_mapa@data$PCT_AGRICOLA, na.color="transparent")
 pal_4 <- colorNumeric( palette="YlOrRd", domain=ac_mapa@data$PCT_PECUARIO, na.color="transparent")
-pal_5 <- colorBin( palette="Spectral", domain = as.numeric(as.character(serie_3@data$VALOR)), bins = bins_series)
-pal_6 <- colorBin( palette="Spectral", domain = as.numeric(as.character(serie_6@data$VALOR)), bins = bins_series)
+pal_5 <- colorFactor( palette="Spectral", domain = serie_3@data$Clase)
+pal_6 <- colorFactor( palette="Spectral", domain = serie_6@data$Clase)
 pal_7 <- colorBin( palette="Spectral", domain = as.numeric(as.character(cambios_usv_ac@data$TERRENOS)), bins = bins_terrenos_tot) 
 pal_8 <- colorFactor( palette="Spectral", domain = cambios_usv@data$tipo_cambi)
 
@@ -70,7 +70,7 @@ vars <- colnames(matriz_correlacion)
 pop_terrenos <- paste0("<b><br/> Área de control: </b>", ac_mapa_mc$CONTROL,
                        "<b><br/> Terrenos totales: </b>", ac_mapa_mc$TERRENOS,
                        "<b><br/> Superficie total: </b>", ac_mapa_mc$SUP_TOTAL, " ha",
-                       "<b><br/> Tamaño promedio de terreno: </b>", as.character(round(as.numeric(ac_mapa_mc$TERRENO_PROMEDIO_SEMBRADO_16), 2)), " ha",
+                       "<b><br/> Tamaño promedio de terreno agrícola: </b>", as.character(round(as.numeric(ac_mapa_mc$TERRENO_PROMEDIO_16), 2)), " ha",
                        "<b><br/> Terrenos agrícolas: </b>", as.character(round(as.numeric(ac_mapa_mc$NUM_TERR_16), 2)), " Terrenos",
                        "<b><br/> Terrenos pecuarios: </b>", as.character(round(as.numeric(ac_mapa_mc$P_TOTAL), 2)), " Terrenos",
                        "<b><br/> Terrenos forestales: </b>", as.character(round(as.numeric(ac_mapa_mc$F_TOTAL), 2)), " Terrenos")
@@ -88,3 +88,13 @@ pop_forestal <- paste0("<b><br/> Terrenos totales: </b>", as.character(ac_mapa_m
 pop_pecuario <- paste0("<b><br/> Terrenos totales: </b>", as.character(ac_mapa_mc$TERRENOS),
                        "<b><br/> Superficie total: </b>", as.character(ac_mapa_mc$SUP_TOTAL), "ha",
                        "<b><br/> Terrenos pecuarios: </b>", as.character(round(as.numeric(ac_mapa_mc$PCT_PECUARIO), 2)), "%")
+
+pop_cambios <- paste0("<b><br/> Área de control: </b>", ac_mapa_mc$CONTROL,
+                      "<b><br/> Vegetación conservada: </b>", cambios_usv_ac$X._CV, " %",
+                      "<b><br/> Ganancia de vegetación primaria: </b>", cambios_usv_ac$X._GVP, " %",
+                      "<b><br/> Ganancia de vegetación secundaria: </b>", cambios_usv_ac$X._GVS, " %",
+                      "<b><br/> Actividad antrópica sin cambio: </b>", cambios_usv_ac$X._AASC, " %",
+                      "<b><br/> Ganancia de actividad agrícola: </b>", cambios_usv_ac$X._AAP, " %",
+                      "<b><br/> Pérdida de vegetación primaria: </b>", cambios_usv_ac$X._PVP, " %",
+                      "<b><br/> Pérdida de vegetación secundaria: </b>", cambios_usv_ac$X._PVS, " %",
+                      "<b><br/> Urbanización: </b>", cambios_usv_ac$X._Urb, " %")

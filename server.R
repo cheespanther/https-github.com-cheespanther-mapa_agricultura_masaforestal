@@ -230,6 +230,26 @@ function(input, output, session) {
                               direction = "auto"),
                             popup = ~pop_pecuario)
     
+    m <- m %>%  addPolygons(data = cambios_usv_ac, stroke = TRUE, smoothFactor = 0.3, 
+                            options = pathOptions(pane = "D"),
+                            fillOpacity = .7,
+                            fillColor = ~pal_7(X._GVP),
+                            opacity = .3,
+                            weight = 1,
+                            color = "#4D4D4D",
+                            dashArray = "2",
+                            highlight = highlightOptions(
+                              weight = 1,
+                              color = "#4D4D4D",
+                              fillOpacity = 0.1,
+                              dashArray = "2",
+                              bringToFront = TRUE),
+                            group = "Cambios por área de control",
+                            labelOptions = labelOptions(
+                              style = list("font-weight" = "normal", padding = "3px 8px"),
+                              textsize = "15px",
+                              direction = "auto"),
+                            popup = ~pop_cambios)
 
     
     # CAPAS DE AUTOCORRELACIÓN
@@ -260,12 +280,12 @@ function(input, output, session) {
     # CAPAS DE SERIES
     m <- m %>%  addPolygons(data = serie_3, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "H"),
-                            fillColor = ~palb(as.numeric(VALOR)),
+                            fillColor = ~pal_5(Clase),
                             group = "Serie 3")
     
     m <- m %>%  addPolygons(data = serie_6, stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "I"),
-                            fillColor = ~palb(as.numeric(VALOR)),
+                            fillColor = ~pal_6(Clase),
                             group = "Serie 6")
     
     # CAPA DE CAMBIOS DE USO DE SUELO
@@ -277,7 +297,7 @@ function(input, output, session) {
     # CONTROL DE CAPAS
     m <- m %>% addLayersControl(
       baseGroups = c("Open Street Map", "Toner", "Toner Lite"),
-      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Resumen cambios", "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación", "Serie 3", "Serie 6", "Cambios USV"),
+      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Cambios por área de control", "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación", "Serie 3", "Serie 6", "Cambios USV"),
       options = layersControlOptions(collapsed = FALSE)
     )
     
@@ -323,7 +343,7 @@ function(input, output, session) {
     proxy %>% clearControls()
     if (input$leyenda) {
       proxy %>% 
-        addLegend("topleft", group = "Serie 3", pal = pal_5, values = ~as.numeric(VALOR), opacity = 1.0)
+        addLegend("topleft", group = "Serie 3", pal = pal_5, values = ~Clase, opacity = 1.0)
     }
   })
   
@@ -332,7 +352,7 @@ function(input, output, session) {
     proxy %>% clearControls()
     if (input$leyenda) {
       proxy %>% 
-        addLegend("topleft", group = "Serie 6", pal = pal_6, values = ~as.numeric(VALOR), opacity = 1.0)
+        addLegend("topleft", group = "Serie 6", pal = pal_6, values = ~Clase, opacity = 1.0)
     }
   })
   
