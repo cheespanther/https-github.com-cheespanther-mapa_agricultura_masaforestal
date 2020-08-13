@@ -138,13 +138,7 @@ bootstrapPage(theme = shinytheme("flatly"),
                                     tabPanel("Resumen",
                                              includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/resumen.html")
                                     ),
-                                    tabPanel("Introducción",
-                                             includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/introduccion.html")
-                                    ),
-                                    tabPanel("Justificación",
-                                             h4("Justificación:"),
-                                             includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/justificacion.html"),
-                                             plotOutput('grafica1'),),
+
                                     tabPanel("Acerca de este sitio",
                                              includeHTML("https://raw.githubusercontent.com/iskarwaluyo/mapa_agricultura_masaforestal/master/html/acerca_de.html"))
                          )

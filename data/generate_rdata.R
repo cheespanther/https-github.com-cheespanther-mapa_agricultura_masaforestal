@@ -167,7 +167,7 @@ save(df_ac_16, df_ac_07, file = "datos.RData")
 save(concentrado07, concentrado16, file = "concentrados.RData")
 save(comparado_ac, comparado_esp, casos_comparables_ac, casos_comparables_esp, sum_comparables_ac, sum_comparables_esp, file = "comparados.RData")
 save(df_correlacion, df_correlacion_mc, matriz_correlacion, df_correlacion_pearson, df_correlacion_pearson_melt, file = "correlaciones.RData")
-save(autocorr, file = "autocorrelaciones.RData")
+save(autocorr, autocorr_ac, file = "autocorrelaciones.RData")
 save(cambios_usv, cambios_usv_ac, file = "cambios.RData")
 
 # REGRESAR AL ENTORNO GENERAL LOCAL

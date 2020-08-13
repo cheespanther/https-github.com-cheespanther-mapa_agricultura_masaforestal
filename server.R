@@ -233,7 +233,7 @@ function(input, output, session) {
     m <- m %>%  addPolygons(data = cambios_usv_ac, stroke = TRUE, smoothFactor = 0.3, 
                             options = pathOptions(pane = "D"),
                             fillOpacity = .7,
-                            fillColor = ~pal_7(X._GVP),
+                            fillColor = ~pal_7(X._PVP),
                             opacity = .3,
                             weight = 1,
                             color = "#4D4D4D",
@@ -250,6 +250,27 @@ function(input, output, session) {
                               textsize = "15px",
                               direction = "auto"),
                             popup = ~pop_cambios)
+    
+    m <- m %>%  addPolygons(data = autocorr_ac, stroke = TRUE, smoothFactor = 0.3, 
+                            options = pathOptions(pane = "D"),
+                            fillOpacity = .7,
+                            fillColor = ~pal_9(P_AT_BJ_S),
+                            opacity = .3,
+                            weight = 1,
+                            color = "#4D4D4D",
+                            dashArray = "2",
+                            highlight = highlightOptions(
+                              weight = 1,
+                              color = "#4D4D4D",
+                              fillOpacity = 0.1,
+                              dashArray = "2",
+                              bringToFront = TRUE),
+                            group = "Autocorrelación por área de control",
+                            labelOptions = labelOptions(
+                              style = list("font-weight" = "normal", padding = "3px 8px"),
+                              textsize = "15px",
+                              direction = "auto"),
+                            popup = ~pop_autocorr)
 
     
     # CAPAS DE AUTOCORRELACIÓN
@@ -297,7 +318,7 @@ function(input, output, session) {
     # CONTROL DE CAPAS
     m <- m %>% addLayersControl(
       baseGroups = c("Open Street Map", "Toner", "Toner Lite"),
-      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Cambios por área de control", "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación", "Serie 3", "Serie 6", "Cambios USV"),
+      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Cambios por área de control", "Autocorrelación por área de control", "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación", "Serie 3", "Serie 6", "Cambios USV"),
       options = layersControlOptions(collapsed = FALSE)
     )
     

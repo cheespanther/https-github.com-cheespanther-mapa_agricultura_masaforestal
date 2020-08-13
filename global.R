@@ -57,8 +57,9 @@ pal_3 <- colorNumeric( palette="YlOrBr", domain=ac_mapa@data$PCT_AGRICOLA, na.co
 pal_4 <- colorNumeric( palette="YlOrRd", domain=ac_mapa@data$PCT_PECUARIO, na.color="transparent")
 pal_5 <- colorFactor( palette="Spectral", domain = serie_3@data$Clase)
 pal_6 <- colorFactor( palette="Spectral", domain = serie_6@data$Clase)
-pal_7 <- colorBin( palette="Spectral", domain = as.numeric(as.character(cambios_usv_ac@data$TERRENOS)), bins = bins_terrenos_tot) 
+pal_7 <- colorBin( palette="YlOrRd", domain = as.numeric(as.character(cambios_usv_ac@data$X._PVP)), bins = bins_pct) 
 pal_8 <- colorFactor( palette="Spectral", domain = cambios_usv@data$tipo_cambi)
+pal_9 <- colorBin( palette="YlOrRd", domain = as.numeric(as.character(autocorr_ac@data$P_AT_AT_S)), bins = bins_pct) 
 
 # k-means only works with numerical variables,
 # so don't give the user the option to select
@@ -90,11 +91,17 @@ pop_pecuario <- paste0("<b><br/> Terrenos totales: </b>", as.character(ac_mapa_m
                        "<b><br/> Terrenos pecuarios: </b>", as.character(round(as.numeric(ac_mapa_mc$PCT_PECUARIO), 2)), "%")
 
 pop_cambios <- paste0("<b><br/> Área de control: </b>", ac_mapa_mc$CONTROL,
-                      "<b><br/> Vegetación conservada: </b>", cambios_usv_ac$X._CV, " %",
-                      "<b><br/> Ganancia de vegetación primaria: </b>", cambios_usv_ac$X._GVP, " %",
-                      "<b><br/> Ganancia de vegetación secundaria: </b>", cambios_usv_ac$X._GVS, " %",
-                      "<b><br/> Actividad antrópica sin cambio: </b>", cambios_usv_ac$X._AASC, " %",
-                      "<b><br/> Ganancia de actividad agrícola: </b>", cambios_usv_ac$X._AAP, " %",
-                      "<b><br/> Pérdida de vegetación primaria: </b>", cambios_usv_ac$X._PVP, " %",
-                      "<b><br/> Pérdida de vegetación secundaria: </b>", cambios_usv_ac$X._PVS, " %",
+                      "<b><br/> Vegetación conservada: </b>", round(cambios_usv_ac$X._CV, 2), " %",
+                      "<b><br/> Ganancia de vegetación primaria: </b>", round(cambios_usv_ac$X._GVP, 2), " %",
+                      "<b><br/> Ganancia de vegetación secundaria: </b>", round(cambios_usv_ac$X._GVS, 2), " %",
+                      "<b><br/> Actividad antrópica sin cambio: </b>", round(cambios_usv_ac$X._AASC, 2), " %",
+                      "<b><br/> Ganancia de actividad agrícola: </b>", round(cambios_usv_ac$X._AAP, 2), " %",
+                      "<b><br/> Pérdida de vegetación primaria: </b>", round(cambios_usv_ac$X._PVP, 2), " %",
+                      "<b><br/> Pérdida de vegetación secundaria: </b>", round(cambios_usv_ac$X._PVS, 2), " %",
                       "<b><br/> Urbanización: </b>", cambios_usv_ac$X._Urb, " %")
+
+pop_autocorr <- paste0("<b><br/> Área de control: </b>", ac_mapa_mc$CONTROL,
+                      "<b><br/> Altas/Altas pérdidas de vegetación: </b>", round(autocorr_ac$P_AT_AT_S, 2), " %",
+                      "<b><br/> Altas/Bajas pérdidas de vegetación: </b>", round(autocorr_ac$P_AT_BJ_S, 2), " %",
+                      "<b><br/> Bajas/Bajas pérdidas de vegetación: </b>", round(autocorr_ac$P_BJ_BJ_S, 2), " %",
+                      "<b><br/> Bajas/Altas pérdidas de vegetación: </b>", round(autocorr_ac$P_BJ_AT_S, 2), " %")
