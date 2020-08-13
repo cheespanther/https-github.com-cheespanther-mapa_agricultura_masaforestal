@@ -39,10 +39,10 @@ function(input, output, session) {
         if (input$CULTI_ESPE != "Todos") {
           data <- data[data$CULTI_ESPE == input$CULTI_ESPE,]
         }
-        if (input$NOM_MUN_07 != "Todos") {
+        if (input$NOM_MUN_16 != "Todos") {
           data <- data[data$NOM_MUN_16 == input$NOM_MUN_16,]
         }
-        if (input$CVE_CONCAT_07 != "Todos") {
+        if (input$CVE_CONCAT_16 != "Todos") {
           data <- data[data$CVE_CONCAT_16 == input$CVE_CONCAT_16,]
         }
         data
@@ -70,7 +70,7 @@ function(input, output, session) {
   
   # VISUALIZACIÓN DE DATOS 3
   output$tabla4 = DT::renderDataTable({
-    data <- df_correlacion_mc
+    data <- df_correlacion
     DT::datatable(
       extensions = 'Buttons',
       options = list(
@@ -230,6 +230,8 @@ function(input, output, session) {
                               direction = "auto"),
                             popup = ~pop_pecuario)
     
+
+    
     # CAPAS DE AUTOCORRELACIÓN
     m <- m %>%  addPolygons(data = autocorr, stroke = TRUE, smoothFactor = 0.3, fillOpacity = 1,
                             options = pathOptions(pane = "E"),
@@ -275,7 +277,7 @@ function(input, output, session) {
     # CONTROL DE CAPAS
     m <- m %>% addLayersControl(
       baseGroups = c("Open Street Map", "Toner", "Toner Lite"),
-      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación", "Serie 3", "Serie 6", "Cambios USV"),
+      overlayGroups = c("Terrenos totales", "Actividad forestal", "Actividad agricola","Actividad pecuaria",  "Resumen cambios", "Autocorrelación pérdida", "Autocorrelación degradación", "Autocorrelación deforestación", "Serie 3", "Serie 6", "Cambios USV"),
       options = layersControlOptions(collapsed = FALSE)
     )
     

@@ -57,7 +57,7 @@ pal_3 <- colorNumeric( palette="YlOrBr", domain=ac_mapa@data$PCT_AGRICOLA, na.co
 pal_4 <- colorNumeric( palette="YlOrRd", domain=ac_mapa@data$PCT_PECUARIO, na.color="transparent")
 pal_5 <- colorBin( palette="Spectral", domain = as.numeric(as.character(serie_3@data$VALOR)), bins = bins_series)
 pal_6 <- colorBin( palette="Spectral", domain = as.numeric(as.character(serie_6@data$VALOR)), bins = bins_series)
-# pal_7 <- colorBin( palette="Spectral", domain = as.numeric(as.character(cambios_ndvi@data$gridcode)), bins = bins_cambios) 
+pal_7 <- colorBin( palette="Spectral", domain = as.numeric(as.character(cambios_usv_ac@data$TERRENOS)), bins = bins_terrenos_tot) 
 pal_8 <- colorFactor( palette="Spectral", domain = cambios_usv@data$tipo_cambi)
 
 # k-means only works with numerical variables,
